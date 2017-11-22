@@ -24,7 +24,12 @@
     "url": "https://github.com/jlenoble/test-gulp-process/issues"
   },
   "homepage": "https://github.com/jlenoble/test-gulp-process#readme",
-  "dependencies": {},
+  "dependencies": {
+    "child-process-data": "^0.5.7",
+    "destglob": "^0.1.4",
+    "equal-file-contents": "^0.1.5",
+    "touch": "^3.1.0"
+  },
   "devDependencies": {
     "autoreload-gulp": "*",
     "babel-core": "^6.26.0",
@@ -32,13 +37,13 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "chai": "*",
-    "del": "*",
+    "del": "^3.0.0",
     "eslint-config-google": "*",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "*",
     "gulp-eslint": "*",
     "gulp-mocha": "*",
-    "gulp-rename": "*",
+    "gulp-rename": "^1.2.2",
     "gulp-replace": "*",
     "gulp-sourcemaps": "*",
     "gulp-wrap": "*",
@@ -46,5 +51,9 @@
     "muter": "*",
     "plumb-gulp": "*"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "gulp": "*",
+    "gulp-babel": "*",
+    "gulp-rename": "*"
+  }
 }

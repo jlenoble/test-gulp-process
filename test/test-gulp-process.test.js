@@ -1,12 +1,36 @@
-import Muter, {captured} from 'muter';
-import {expect} from 'chai';
-import TestGulpProcess from '../src/test-gulp-process';
+import testGulpProcess, {compareTranspiled, touchFile}
+  from '../src/test-gulp-process';
 
-describe('Testing TestGulpProcess', function () {
-  const muter = Muter(console, 'log'); // eslint-disable-line new-cap
+describe('Testing Gulpfile', function () {
+  it(`Testing a transpile task`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-transpile-all.js',
 
-  it(`Class TestGulpProcess says 'Hello world!'`, captured(muter, function () {
-    new TestGulpProcess();
-    expect(muter.getLogs()).to.equal('Hello world!\n');
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'exec:transpile:all'...`,
+      [`Finished 'exec:transpile:all' after`, compareTranspiled('src/**/*.js',
+        'build')],
+      `Finished 'default' after`,
+    ],
+  }));
+
+  it(`Testing a tdd transpile task`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'tdd:transpile:all'...`,
+      `Starting 'exec:transpile:all'...`,
+      [`Finished 'exec:transpile:all' after`, compareTranspiled('src/**/*.js',
+        'build')],
+      `Starting 'watch:transpile:all'...`,
+      `Finished 'watch:transpile:all' after`,
+      `Finished 'tdd:transpile:all' after`,
+      [`Finished 'default' after`, touchFile('src/test-gulp-process.js')],
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+    ],
   }));
 });

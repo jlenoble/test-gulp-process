@@ -1,0 +1,48 @@
+{
+  "generator-wupjs": {
+    "devDeps": {
+      "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+      "plumb-gulp": "*",
+      "autoreload-gulp": "*",
+      "gulp-sourcemaps": "*",
+      "del": "*",
+      "gulp-rename": "*",
+      "gulp-replace": "*",
+      "gulp-wrap": "*",
+      "markdown-include": "*",
+      "chai": "*",
+      "babel-preset-es2017": "*",
+      "babel-preset-es2016": "*",
+      "babel-preset-es2015": "*",
+      "babel-plugin-add-module-exports": "*",
+      "gulp-babel": "*",
+      "gulp-eslint": "*",
+      "eslint-config-google": "*",
+      "gulp-mocha": "*",
+      "muter": "*"
+    },
+    "genVersion": "0.3.1",
+    "updated": "2017-11-22T23:06:56.504Z",
+    "created": "2017-11-22T23:06:56.504Z",
+    "version": "0.0.0",
+    "contributors": [],
+    "keywords": [],
+    "deps": {},
+    "peerDeps": {},
+    "name": "test-gulp-process",
+    "description": "Helpers to test Gulp processes",
+    "author": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com",
+    "github": "jlenoble",
+    "preprocessors": [],
+    "license": "MIT",
+    "babel": "es2017",
+    "linters": [
+      "EsLint"
+    ],
+    "addons": [],
+    "testRunners": [
+      "Mocha"
+    ]
+  }
+}

@@ -26,6 +26,7 @@
   "homepage": "https://github.com/jlenoble/test-gulp-process#readme",
   "dependencies": {
     "child-process-data": "^0.5.7",
+    "del": "^3.0.0",
     "destglob": "^0.1.4",
     "equal-file-contents": "^0.1.5",
     "touch": "^3.1.0"
@@ -37,7 +38,6 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "chai": "*",
-    "del": "^3.0.0",
     "eslint-config-google": "*",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "*",

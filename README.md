@@ -96,8 +96,7 @@ describe('Testing gulpfile', function () {
   }));
 });
 ```
-
-### `touchFile` helper function
+### `touchFile` helper function
 
 Considering the gulpfile:
 

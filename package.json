@@ -29,6 +29,7 @@
     "del": "^3.0.0",
     "destglob": "^0.1.4",
     "equal-file-contents": "^0.1.5",
+    "gulp-rename": "^1.2.2",
     "touch": "^3.1.0"
   },
   "devDependencies": {
@@ -43,7 +44,6 @@
     "gulp-babel": "*",
     "gulp-eslint": "*",
     "gulp-mocha": "*",
-    "gulp-rename": "^1.2.2",
     "gulp-replace": "*",
     "gulp-sourcemaps": "*",
     "gulp-wrap": "*",
@@ -53,7 +53,6 @@
   },
   "peerDependencies": {
     "gulp": "*",
-    "gulp-babel": "*",
-    "gulp-rename": "*"
+    "gulp-babel": "*"
   }
 }

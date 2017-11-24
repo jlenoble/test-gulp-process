@@ -4,7 +4,7 @@ import equalFileContents from 'equal-file-contents';
 import touch from 'touch';
 import del from 'del';
 import babel from 'gulp-babel';
-import cleanupWrapper from 'cleanup-wrapper';
+import {chDir} from 'cleanup-wrapper';
 import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
 
 const compareTranspiled = (_glob, _dest) => options => {
@@ -24,20 +24,7 @@ const deleteFile = _file => options => {
     return del(file);
   };
 
-  const cwd = process.cwd();
-
-  const opts = {
-    before () {
-      process.chdir(options.dest);
-    },
-    after () {
-      process.chdir(cwd);
-    },
-  };
-
-  const safeExec = cleanupWrapper(exec, opts);
-
-  return safeExec();
+  return chDir(options.dest, exec)();
 };
 
 const isDeleted = _file => options => {

@@ -44,7 +44,11 @@ export default function testGulpProcess (opts) {
         };
         const genTestFunctions = function* (messages) {
           const array = messages.map(msg => {
-            return Array.isArray(msg) ? msg[1] : null;
+            if (Array.isArray(msg)) {
+              const [, ...fns] = msg;
+              return fns;
+            }
+            return null;
           });
           yield* array;
         };
@@ -53,18 +57,20 @@ export default function testGulpProcess (opts) {
         const testFunctions = genTestFunctions(this.messages);
 
         let message = messages.next();
-        let testFn = testFunctions.next();
+        let testFns = testFunctions.next();
 
         while (!message.done &&
           await this.waitForMessage(results, message.value)) {
           results.forgetUpTo(message.value, {included: true});
 
-          if (testFn.value !== null) {
-            await testFn.value(options);
+          if (testFns.value !== null) {
+            for (let fn of testFns.value) {
+              await fn(options);
+            }
           }
 
           message = messages.next();
-          testFn = testFunctions.next();
+          testFns = testFunctions.next();
         }
 
         return results;

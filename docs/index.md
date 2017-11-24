@@ -78,7 +78,7 @@ describe('Testing gulpfile', function () {
       `Starting 'default'...`,
       `Starting 'exec:transpile:all'...`,
       [`Finished 'exec:transpile:all' after`, compareTranspiled(
-        'src/**/*.js', 'build')], // Checks that the buid dir contains the transpiled files from 'src/**/*.js'
+        'src/**/*.js', 'build')], // Checks that the build dir contains the transpiled files from 'src/**/*.js'
       `Finished 'default' after`,
     ],
   }));

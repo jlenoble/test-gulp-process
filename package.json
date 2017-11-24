@@ -26,10 +26,12 @@
   "homepage": "https://github.com/jlenoble/test-gulp-process#readme",
   "dependencies": {
     "child-process-data": "^0.5.7",
+    "cleanup-wrapper": "^0.2.3",
     "del": "^3.0.0",
     "destglob": "^0.1.4",
     "equal-file-contents": "^0.1.5",
     "gulp-rename": "^1.2.2",
+    "stat-again": "^0.3.0",
     "touch": "^3.1.0"
   },
   "devDependencies": {

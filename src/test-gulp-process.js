@@ -100,4 +100,5 @@ export default function testGulpProcess (opts) {
   };
 }
 
-export {compareTranspiled, touchFile} from './test-tools';
+export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound}
+  from './test-tools';

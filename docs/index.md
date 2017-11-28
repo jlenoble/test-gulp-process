@@ -168,6 +168,32 @@ describe('Testing Gulpfile', function () {
 });
 ```
 
+### `never` helper function !heading
+
+`never` forbids the occurrence of a specific message among all the captured messages.
+
+In the following example, as we launch the process for target `hello`, the message concerning the `default` target should never appear.
+
+```js
+import testGulpProcess, {never} from 'test-gulp-process';
+
+describe('Testing Gulpfile target', function () {
+  it(`Target is not default`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-target.js',
+    target: 'hello',
+
+    messages: [
+      never(`Starting 'default'...`),
+      never(`Finished 'default' after`),
+      `Starting 'hello'...`,
+      'hello',
+      `Finished 'hello' after`,
+    ],
+  }));
+});
+```
+
 ## License !heading
 
 test-gulp-process is [MIT licensed](./LICENSE).

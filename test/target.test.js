@@ -1,4 +1,4 @@
-import testGulpProcess from '../src/test-gulp-process';
+import testGulpProcess, {never} from '../src/test-gulp-process';
 
 describe('Testing Gulpfile target', function () {
   it(`Target is default`, testGulpProcess({
@@ -18,6 +18,7 @@ describe('Testing Gulpfile target', function () {
     target: 'hello',
 
     messages: [
+      never(`Starting 'default'...`),
       `Starting 'hello'...`,
       'hello',
       `Finished 'hello' after`,

@@ -40,10 +40,21 @@ export default function testGulpProcess (opts) {
         const genMessages = function* (messages) {
           const array = messages.map(msg => {
             return Array.isArray(msg) ? msg[0] : msg;
+          }).filter(msg => typeof msg === 'string');
+          yield* array;
+        };
+        const genOnEachMessageFunctions = function* (messages) {
+          const array = [];
+          messages.every(msg => {
+            const yes = typeof msg === 'function';
+            if (yes) {
+              array.push(msg);
+            }
+            return yes;
           });
           yield* array;
         };
-        const genTestFunctions = function* (messages) {
+        const genOnMessageFunctions = function* (messages) {
           const array = messages.map(msg => {
             if (Array.isArray(msg)) {
               const [, ...fns] = msg;
@@ -55,23 +66,27 @@ export default function testGulpProcess (opts) {
         };
 
         const messages = genMessages(this.messages);
-        const testFunctions = genTestFunctions(this.messages);
+        const onMessageFunctions = genOnMessageFunctions(this.messages);
 
         let message = messages.next();
-        let testFns = testFunctions.next();
+        let onMessageFns = onMessageFunctions.next();
 
         while (!message.done &&
           await this.waitForMessage(results, message.value)) {
+          for (let tester of genOnEachMessageFunctions(this.messages)) {
+            results.allMessages.every(tester);
+          }
+
           results.forgetUpTo(message.value, {included: true});
 
-          if (testFns.value !== null) {
-            for (let fn of testFns.value) {
+          if (onMessageFns.value !== null) {
+            for (let fn of onMessageFns.value) {
               await fn(options);
             }
           }
 
           message = messages.next();
-          testFns = testFunctions.next();
+          onMessageFns = onMessageFunctions.next();
         }
 
         return results;
@@ -101,5 +116,5 @@ export default function testGulpProcess (opts) {
   };
 }
 
-export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound}
+export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound, never}
   from './test-tools';

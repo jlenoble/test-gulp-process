@@ -3,11 +3,13 @@
 Helpers to test Gulp processes
 
   * [Basic usage](#basic-usage)
+  * [Options](#options)
   * [Using callbacks](#using-callbacks)
   * [Helper callbacks](#helper-callbacks)
     * [`compareTranspiled` helper function](#comparetranspiled-helper-function)
     * [`touchFile` helper function](#touchfile-helper-function)
     * [`deleteFile`, `isDeleted` and `isFound` helper functions](#deletefile-isdeleted-and-isfound-helper-functions)
+    * [`never` helper function](#never-helper-function)
   * [License](#license)
 
 
@@ -51,6 +53,13 @@ describe('Testing gulpfile', function () {
 });
 ```
 
+## Options
+
+* `sources`: A glob pointing to the files to be used as sources for the test.
+* `gulpfile`: The gulpfile to be used for the test.
+* `target` (optional): The target with which to call `gulp`.
+* `messages`: An array of all the messages to be expected, in order, and of functions to be executed, in order. (see [Using callbacks](#using-callbacks)).
+
 ## Using callbacks
 
 When a message is intercepted, a custom callback can be run:
@@ -91,7 +100,7 @@ describe('Testing gulpfile', function () {
       `Starting 'default'...`,
       `Starting 'exec:transpile:all'...`,
       [`Finished 'exec:transpile:all' after`, compareTranspiled(
-        'src/**/*.js', 'build')], // Checks that the buid dir contains the transpiled files from 'src/**/*.js'
+        'src/**/*.js', 'build')], // Checks that the build dir contains the transpiled files from 'src/**/*.js'
       `Finished 'default' after`,
     ],
   }));
@@ -176,6 +185,32 @@ describe('Testing Gulpfile', function () {
       [`Finished 'default' after`, deleteFile('src/some-file.js')],
       `Starting 'exec:transpile:all'...`,
       [`Finished 'exec:transpile:all' after`, isDeleted('src/some-file.js')],
+    ],
+  }));
+});
+```
+
+### `never` helper function
+
+`never` forbids the occurrence of a specific message among all the captured messages.
+
+In the following example, as we launch the process for target `hello`, the message concerning the `default` target should never appear.
+
+```js
+import testGulpProcess, {never} from 'test-gulp-process';
+
+describe('Testing Gulpfile target', function () {
+  it(`Target is not default`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-target.js',
+    target: 'hello',
+
+    messages: [
+      never(`Starting 'default'...`),
+      never(`Finished 'default' after`),
+      `Starting 'hello'...`,
+      'hello',
+      `Finished 'hello' after`,
     ],
   }));
 });

@@ -27,7 +27,8 @@ export default function testGulpProcess (opts) {
       spawnTest () {
         this.childProcess = spawn(
           'gulp',
-          ['--gulpfile',
+          [options.target,
+            '--gulpfile',
             path.join(options.dest, 'gulpfile.babel.js')],
           {detached: true} // Make sure all test processes will be killed
         );
@@ -94,7 +95,7 @@ export default function testGulpProcess (opts) {
       onCheckResultsError: onError,
 
       waitForMessage,
-    }, opts, {dest: newDest()});
+    }, {target: 'default'}, opts, {dest: newDest()});
 
     return makeSingleTest(options)();
   };

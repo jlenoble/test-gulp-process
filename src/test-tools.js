@@ -7,18 +7,18 @@ import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
 import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
 
-const compareTranspiled = (_glob, _dest) => options => {
+export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
   const glob = destglob(_glob, options.dest);
   return equalFileContents(glob, dest, babel, options.dest);
 };
 
-const touchFile = _file => options => {
+export const touchFile = _file => options => {
   const [file] = destglob(_file, options.dest);
   return touch(file);
 };
 
-const deleteFile = _file => options => {
+export const deleteFile = _file => options => {
   const exec = () => {
     const [file] = destglob(_file, options.dest);
     return del(file);
@@ -27,16 +27,21 @@ const deleteFile = _file => options => {
   return chDir(options.dest, exec)();
 };
 
-const isDeleted = _file => options => {
+export const isDeleted = _file => options => {
   const [file] = destglob(_file, options.dest);
 
   return expectEventuallyDeleted(file);
 };
 
-const isFound = _file => options => {
+export const isFound = _file => options => {
   const [file] = destglob(_file, options.dest);
 
   return expectEventuallyFound(file);
 };
 
-export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound};
+export const never = _msg => msg => {
+  if (msg.match(new RegExp(_msg))) {
+    throw new Error(`Forbidden message "${_msg}" was caught`);
+  }
+  return true;
+};

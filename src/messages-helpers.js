@@ -1,4 +1,3 @@
-
 const repeat = (action, interval = 200, maxDuration = 4000) => {
   let intervalId;
   let timeoutId;

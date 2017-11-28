@@ -19,6 +19,7 @@ describe('Testing Gulpfile target', function () {
 
     messages: [
       never(`Starting 'default'...`),
+      never(`Finished 'default' after`),
       `Starting 'hello'...`,
       'hello',
       `Finished 'hello' after`,

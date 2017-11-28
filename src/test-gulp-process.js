@@ -67,15 +67,14 @@ export default function testGulpProcess (opts) {
 
         const messages = genMessages(this.messages);
         const onMessageFunctions = genOnMessageFunctions(this.messages);
+        const globalFunctions = [...genOnEachMessageFunctions(this.messages)];
 
         let message = messages.next();
         let onMessageFns = onMessageFunctions.next();
 
         while (!message.done &&
           await this.waitForMessage(results, message.value)) {
-          for (let tester of genOnEachMessageFunctions(this.messages)) {
-            results.allMessages.every(tester);
-          }
+          results.testUpTo(globalFunctions);
 
           results.forgetUpTo(message.value, {included: true});
 

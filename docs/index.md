@@ -38,6 +38,13 @@ describe('Testing gulpfile', function () {
 });
 ```
 
+## Options !heading
+
+* `sources`: A glob pointing to the files to be used as sources for the test.
+* `gulpfile`: The gulpfile to be used for the test.
+* `target` (optional): The target with which to call `gulp`.
+* `messages`: An array of all the messages to be expected, in order, and of functions to be executed, in order. (see [Using callbacks](#using-callbacks)).
+
 ## Using callbacks !heading
 
 When a message is intercepted, a custom callback can be run:

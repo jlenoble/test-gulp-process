@@ -5,11 +5,14 @@ import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules}
   from './setup-helpers';
 import {waitForMessage} from './messages-helpers';
 import {cleanUp, onError} from './cleanup-helpers';
+import Messages from './messages';
 
 export default function testGulpProcess (opts) {
   return function () {
     this.timeout(opts.timeout // eslint-disable-line no-invalid-this
       || 20000);
+
+    const messages = new Messages(opts.messages);
 
     const options = Object.assign({
       setupTest () {
@@ -37,55 +40,21 @@ export default function testGulpProcess (opts) {
       },
 
       async checkResults (results) {
-        const genMessages = function* (messages) {
-          const array = messages.map(msg => {
-            return Array.isArray(msg) ? msg[0] : msg;
-          }).filter(msg => typeof msg === 'string');
-          yield* array;
-        };
-        const genOnEachMessageFunctions = function* (messages) {
-          const array = [];
-          messages.every(msg => {
-            const yes = typeof msg === 'function';
-            if (yes) {
-              array.push(msg);
-            }
-            return yes;
-          });
-          yield* array;
-        };
-        const genOnMessageFunctions = function* (messages) {
-          const array = messages.map(msg => {
-            if (Array.isArray(msg)) {
-              const [, ...fns] = msg;
-              return fns;
-            }
-            return null;
-          });
-          yield* array;
-        };
+        let currentState = messages.next();
 
-        const messages = genMessages(this.messages);
-        const onMessageFunctions = genOnMessageFunctions(this.messages);
-        const globalFunctions = [...genOnEachMessageFunctions(this.messages)];
+        while (!currentState.done &&
+          await this.waitForMessage(results, currentState.value.message)) {
+          results.testUpTo(messages.globalFns);
 
-        let message = messages.next();
-        let onMessageFns = onMessageFunctions.next();
+          results.forgetUpTo(currentState.value.message, {included: true});
 
-        while (!message.done &&
-          await this.waitForMessage(results, message.value)) {
-          results.testUpTo(globalFunctions);
-
-          results.forgetUpTo(message.value, {included: true});
-
-          if (onMessageFns.value !== null) {
-            for (let fn of onMessageFns.value) {
+          if (currentState.value.onMessageFns !== null) {
+            for (let fn of currentState.value.onMessageFns) {
               await fn(options);
             }
           }
 
-          message = messages.next();
-          onMessageFns = onMessageFunctions.next();
+          currentState = messages.next();
         }
 
         return results;

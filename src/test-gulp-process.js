@@ -20,18 +20,19 @@ export default function testGulpProcess (opts) {
       targets = [targets];
     }
 
-    const tests = targets.map(target => {
+    const tests = targets.map((target, nth) => {
       const options = Object.assign({
         setupTest () {
           this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
           process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
           // these tests
 
-          return Promise.all([
+          // nth: Only copy sources on first gulp call in the series of tests
+          return !nth ? Promise.all([
             copySources(options),
             copyGulpfile(options),
             copyBabelrc(options),
-          ]).then(() => linkNodeModules(options));
+          ]).then(() => linkNodeModules(options)) : Promise.resolve();
         },
 
         spawnTest () {

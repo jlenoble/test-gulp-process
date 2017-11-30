@@ -36,7 +36,7 @@ describe('Testing Gulpfile target', function () {
       'hello',
       [`Finished 'hello' after`, nextTarget()],
       `Starting 'default'...`,
-      'hello',
+      'coucou',
       [`Finished 'default' after`, nextTarget()],
       `Starting 'hello'...`,
       'hello',

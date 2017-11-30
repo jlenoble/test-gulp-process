@@ -13,71 +13,84 @@ export default function testGulpProcess (opts) {
       || 20000);
 
     const messages = new Messages(opts.messages);
+    const dest = newDest();
 
-    const options = Object.assign({
-      setupTest () {
-        this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
-        process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
-        // these tests
+    let targets = opts.target || ['default'];
 
-        return Promise.all([
-          copySources(options),
-          copyGulpfile(options),
-          copyBabelrc(options),
-        ]).then(() => linkNodeModules(options));
-      },
+    if (!Array.isArray(targets)) {
+      targets = [targets];
+    }
 
-      spawnTest () {
-        this.childProcess = spawn(
-          'gulp',
-          [options.target,
-            '--gulpfile',
-            path.join(options.dest, 'gulpfile.babel.js')],
-          {detached: true} // Make sure all test processes will be killed
-        );
+    const tests = targets.map(target => {
+      const options = Object.assign({
+        setupTest () {
+          this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
+          process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
+          // these tests
 
-        return childProcessData(this.childProcess);
-      },
+          return Promise.all([
+            copySources(options),
+            copyGulpfile(options),
+            copyBabelrc(options),
+          ]).then(() => linkNodeModules(options));
+        },
 
-      async checkResults (results) {
-        while (messages.next() &&
-          await this.waitForMessage(results, messages.message)) {
-          results.testUpTo(messages.globalFns, messages.message);
-          results.forgetUpTo(messages.message, {included: true});
+        spawnTest () {
+          this.childProcess = spawn(
+            'gulp',
+            [options.target,
+              '--gulpfile',
+              path.join(options.dest, 'gulpfile.babel.js')],
+            {detached: true} // Make sure all test processes will be killed
+          );
 
-          if (messages.fns !== null) {
-            for (let fn of messages.fns) {
-              await fn(options);
+          return childProcessData(this.childProcess);
+        },
+
+        async checkResults (results) {
+          while (messages.next() &&
+            await this.waitForMessage(results, messages.message)) {
+            results.testUpTo(messages.globalFns, messages.message);
+            results.forgetUpTo(messages.message, {included: true});
+
+            if (messages.fns !== null) {
+              for (let fn of messages.fns) {
+                await fn(options);
+              }
             }
           }
-        }
 
-        return results;
-      },
+          return results;
+        },
 
-      tearDownTest () {
-        return cleanUp(this.childProcess, options.dest,
-          this.BABEL_DISABLE_CACHE)
-          .catch(err => {
-            console.error('Failed to clean up after test');
-            console.error('You should take time and check that:');
-            console.error(`- Directory ${options.dest} is deleted`);
-            console.error(`- Process ${
-              this.childProcess.pid} is not running any more`);
-            return Promise.reject(err);
-          });
-      },
+        tearDownTest () {
+          return cleanUp(this.childProcess, options.dest,
+            this.BABEL_DISABLE_CACHE)
+            .catch(err => {
+              console.error('Failed to clean up after test');
+              console.error('You should take time and check that:');
+              console.error(`- Directory ${options.dest} is deleted`);
+              console.error(`- Process ${
+                this.childProcess.pid} is not running any more`);
+              return Promise.reject(err);
+            });
+        },
 
-      onSetupError: onError,
-      onSpawnError: onError,
-      onCheckResultsError: onError,
+        onSetupError: onError,
+        onSpawnError: onError,
+        onCheckResultsError: onError,
 
-      waitForMessage,
-    }, {target: 'default'}, opts, {dest: newDest()});
+        waitForMessage,
+      }, opts, {dest, target});
 
-    return makeSingleTest(options)();
+      return makeSingleTest(options);
+    });
+
+    return tests.reduce((promise, test) => {
+      return promise.then(() => test());
+    }, Promise.resolve());
   };
 }
 
-export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound, never}
-  from './test-tools';
+export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound, never,
+  nextTarget} from './test-tools';

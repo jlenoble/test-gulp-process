@@ -1,4 +1,4 @@
-import testGulpProcess, {never} from '../src/test-gulp-process';
+import testGulpProcess, {never, nextTarget} from '../src/test-gulp-process';
 
 describe('Testing Gulpfile target', function () {
   it(`Target is default`, testGulpProcess({
@@ -20,6 +20,24 @@ describe('Testing Gulpfile target', function () {
     messages: [
       never(`Starting 'default'...`),
       never(`Finished 'default' after`),
+      `Starting 'hello'...`,
+      'hello',
+      `Finished 'hello' after`,
+    ],
+  }));
+
+  it(`Target is not default`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-target.js',
+    target: ['hello', 'default', 'hello'],
+
+    messages: [
+      `Starting 'hello'...`,
+      'hello',
+      [`Finished 'hello' after`, nextTarget()],
+      `Starting 'default'...`,
+      'hello',
+      [`Finished 'default' after`, nextTarget()],
       `Starting 'hello'...`,
       'hello',
       `Finished 'hello' after`,

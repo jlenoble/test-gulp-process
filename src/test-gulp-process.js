@@ -52,12 +52,7 @@ export default function testGulpProcess (opts) {
             await this.waitForMessage(results, messages.message)) {
             results.testUpTo(messages.globalFns, messages.message);
             results.forgetUpTo(messages.message, {included: true});
-
-            if (messages.fns !== null) {
-              for (let fn of messages.fns) {
-                await fn(options);
-              }
-            }
+            await messages.runCurrentFns(options);
           }
 
           return results;

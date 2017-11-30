@@ -53,4 +53,14 @@ export default class Messages {
 
     return !message.done;
   }
+
+  async runCurrentFns (options) {
+    if (this.fns === null) {
+      return;
+    }
+
+    for (let fn of this.fns) {
+      await fn(options);
+    }
+  }
 }

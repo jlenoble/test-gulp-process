@@ -3,7 +3,6 @@ import {spawn} from 'child_process';
 import path from 'path';
 import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules}
   from './setup-helpers';
-import {waitForMessage} from './messages-helpers';
 import {cleanUp, onError} from './cleanup-helpers';
 import Messages from './messages';
 
@@ -48,8 +47,7 @@ export default function testGulpProcess (opts) {
         },
 
         async checkResults (results) {
-          while (messages.next() &&
-            await this.waitForMessage(results, messages.message)) {
+          while (await messages.next(results)) {
             results.testUpTo(messages.globalFns, messages.message);
             results.forgetUpTo(messages.message, {included: true});
             await messages.runCurrentFns(options);
@@ -74,8 +72,6 @@ export default function testGulpProcess (opts) {
         onSetupError: onError,
         onSpawnError: onError,
         onCheckResultsError: onError,
-
-        waitForMessage,
       }, opts, {dest, target});
 
       return makeSingleTest(options);

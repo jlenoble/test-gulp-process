@@ -1,3 +1,5 @@
+import {waitForMessage} from './messages-helpers';
+
 const genMessages = function* (messages) {
   const array = messages.map(msg => {
     return Array.isArray(msg) ? msg[0] : msg;
@@ -45,13 +47,13 @@ export default class Messages {
     });
   }
 
-  next () {
+  async next (results) {
     let message = this.messages.next();
 
     this.message = message.value;
     this.fns = this.onMessageFns.next().value;
 
-    return !message.done;
+    return !message.done && await waitForMessage(results, this.message);
   }
 
   async runCurrentFns (options) {

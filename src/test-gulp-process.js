@@ -40,21 +40,16 @@ export default function testGulpProcess (opts) {
       },
 
       async checkResults (results) {
-        let currentState = messages.next();
+        while (messages.next() &&
+          await this.waitForMessage(results, messages.message)) {
+          results.testUpTo(messages.globalFns, messages.message);
+          results.forgetUpTo(messages.message, {included: true});
 
-        while (!currentState.done &&
-          await this.waitForMessage(results, currentState.value.message)) {
-          results.testUpTo(messages.globalFns);
-
-          results.forgetUpTo(currentState.value.message, {included: true});
-
-          if (currentState.value.onMessageFns !== null) {
-            for (let fn of currentState.value.onMessageFns) {
+          if (messages.fns !== null) {
+            for (let fn of messages.fns) {
               await fn(options);
             }
           }
-
-          currentState = messages.next();
         }
 
         return results;

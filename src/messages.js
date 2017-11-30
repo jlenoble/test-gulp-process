@@ -46,12 +46,11 @@ export default class Messages {
   }
 
   next () {
-    const message = this.messages.next();
-    const onMessageFns = this.onMessageFns.next();
+    let message = this.messages.next();
 
-    return {
-      value: {message: message.value, onMessageFns: onMessageFns.value},
-      done: message.done,
-    };
+    this.message = message.value;
+    this.fns = this.onMessageFns.next().value;
+
+    return !message.done;
   }
 }

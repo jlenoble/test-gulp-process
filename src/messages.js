@@ -7,7 +7,7 @@ const genMessages = function* (messages) {
   yield* array;
 };
 
-const genOnEachMessageFunctions = function* (messages) {
+const genOnAllMessageFunctions = function* (messages) {
   const array = [];
   messages.every(msg => {
     const yes = typeof msg === 'function';
@@ -42,12 +42,16 @@ export default class Messages {
       },
 
       globalFns: {
-        value: [...genOnEachMessageFunctions(messages)],
+        value: [...genOnAllMessageFunctions(messages)],
       },
     });
   }
 
   async next (results) {
+    if (this.nextTarget) {
+      return this.nextTarget = false;
+    }
+
     let message = this.messages.next();
 
     this.message = message.value;
@@ -62,7 +66,9 @@ export default class Messages {
     }
 
     for (let fn of this.fns) {
-      await fn(options);
+      if (`Run next ${options.target}` === await fn(options)) {
+        this.nextTarget = true;
+      }
     }
   }
 }

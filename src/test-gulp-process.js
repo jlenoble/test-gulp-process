@@ -14,13 +14,13 @@ export default function testGulpProcess (opts) {
     const messages = new Messages(opts.messages);
     const dest = newDest();
 
-    let targets = opts.target || ['default'];
+    let tasks = opts.task || ['default'];
 
-    if (!Array.isArray(targets)) {
-      targets = [targets];
+    if (!Array.isArray(tasks)) {
+      tasks = [tasks];
     }
 
-    const tests = targets.map((target, nth) => {
+    const tests = tasks.map((task, nth) => {
       const options = Object.assign({
         setupTest () {
           this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
@@ -38,7 +38,7 @@ export default function testGulpProcess (opts) {
         spawnTest () {
           this.childProcess = spawn(
             'gulp',
-            [options.target,
+            [options.task,
               '--gulpfile',
               path.join(options.dest, 'gulpfile.babel.js')],
             {detached: true} // Make sure all test processes will be killed
@@ -73,7 +73,7 @@ export default function testGulpProcess (opts) {
         onSetupError: onError,
         onSpawnError: onError,
         onCheckResultsError: onError,
-      }, opts, {dest, target});
+      }, opts, {dest, task});
 
       return makeSingleTest(options);
     });
@@ -84,5 +84,12 @@ export default function testGulpProcess (opts) {
   };
 }
 
-export {compareTranspiled, touchFile, deleteFile, isDeleted, isFound, never,
-  nextTarget} from './test-tools';
+export {
+  compareTranspiled,
+  deleteFile,
+  isDeleted,
+  isFound,
+  never,
+  nextTask,
+  touchFile,
+} from './test-tools';

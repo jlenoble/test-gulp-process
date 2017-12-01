@@ -46,6 +46,6 @@ export const never = _msg => msg => {
   return true;
 };
 
-export const nextTarget = () => options => {
+export const nextTask = () => options => {
   return `Run next ${options.target}`;
 };

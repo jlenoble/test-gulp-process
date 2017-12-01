@@ -58,6 +58,10 @@ export default class Messages {
   }
 
   async runCurrentFns (options) {
-    return await this.taskMessages.runCurrentFns(options);
+    const next = await this.taskMessages.runCurrentFns(options);
+    if (this.taskMessages.nextTask) {
+      this.index++;
+    }
+    return next;
   }
 }

@@ -5,6 +5,11 @@ gulp.task('hello', done => {
   done();
 });
 
+gulp.task('ciao', done => {
+  console.log('ciao');
+  done();
+});
+
 gulp.task('default', done => {
   console.log('coucou');
   done();

@@ -31,7 +31,10 @@ export const genOnMessageFunctions = function* (messages) {
 };
 
 export default class TaskMessages {
-  constructor (messages) {
+  constructor (msgs) {
+    // Clone msgs to not share it across instances
+    const messages = msgs.concat();
+
     Object.defineProperties(this, {
       messages: {
         value: genMessages(messages),

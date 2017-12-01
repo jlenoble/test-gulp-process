@@ -42,7 +42,7 @@ export const never = _msg => msg => {
 };
 
 export const nextTask = () => options => {
-  return `Run next ${options.target}`;
+  return `Run next ${options.task}`;
 };
 
 export const touchFile = _file => options => {

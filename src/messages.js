@@ -48,8 +48,8 @@ export default class Messages {
   }
 
   async next (results) {
-    if (this.nextTarget) {
-      return this.nextTarget = false;
+    if (this.nextTask) {
+      return this.nextTask = false;
     }
 
     let message = this.messages.next();
@@ -66,8 +66,8 @@ export default class Messages {
     }
 
     for (let fn of this.fns) {
-      if (`Run next ${options.target}` === await fn(options)) {
-        this.nextTarget = true;
+      if (`Run next ${options.task}` === await fn(options)) {
+        this.nextTask = true;
       }
     }
   }

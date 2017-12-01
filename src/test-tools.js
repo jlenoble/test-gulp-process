@@ -41,9 +41,10 @@ export const never = _msg => msg => {
   return true;
 };
 
-export const nextTask = () => options => {
+export const runNextTask = options => {
   return `Run next ${options.task}`;
 };
+export const nextTask = () => runNextTask;
 
 export const touchFile = _file => options => {
   const [file] = destglob(_file, options.dest);

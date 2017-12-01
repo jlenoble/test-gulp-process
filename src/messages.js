@@ -1,74 +1,27 @@
-import {waitForMessage} from './messages-helpers';
-
-const genMessages = function* (messages) {
-  const array = messages.map(msg => {
-    return Array.isArray(msg) ? msg[0] : msg;
-  }).filter(msg => typeof msg === 'string');
-  yield* array;
-};
-
-const genOnAllMessageFunctions = function* (messages) {
-  const array = [];
-  messages.every(msg => {
-    const yes = typeof msg === 'function';
-    if (yes) {
-      array.push(msg);
-    }
-    return yes;
-  });
-  yield* array;
-};
-
-const genOnMessageFunctions = function* (messages) {
-  const array = messages.map(msg => {
-    if (Array.isArray(msg)) {
-      const [, ...fns] = msg;
-      return fns;
-    }
-    return null;
-  });
-  yield* array;
-};
+import TaskMessages from './task-messages';
 
 export default class Messages {
   constructor (messages) {
+    const taskMessages = new TaskMessages(messages);
+
     Object.defineProperties(this, {
-      messages: {
-        value: genMessages(messages),
-      },
-
-      onMessageFns: {
-        value: genOnMessageFunctions(messages),
-      },
-
-      globalFns: {
-        value: [...genOnAllMessageFunctions(messages)],
+      taskMessages: {
+        value: taskMessages,
       },
     });
   }
 
   async next (results) {
-    if (this.nextTask) {
-      return this.nextTask = false;
-    }
-
-    let message = this.messages.next();
-
-    this.message = message.value;
-    this.fns = this.onMessageFns.next().value;
-
-    return !message.done && await waitForMessage(results, this.message);
+    const next = await this.taskMessages.next(results);
+    this.globalFns = this.taskMessages.globalFns;
+    this.message = this.taskMessages.message;
+    this.fns = this.taskMessages.fns;
+    return next;
   }
 
   async runCurrentFns (options) {
-    if (this.fns === null) {
-      return;
-    }
-
-    for (let fn of this.fns) {
-      if (`Run next ${options.task}` === await fn(options)) {
-        this.nextTask = true;
-      }
-    }
+    const next = await this.taskMessages.runCurrentFns(options);
+    this.nextTarget = this.taskMessages.nextTarget;
+    return next;
   }
 }

@@ -13,11 +13,6 @@ export const compareTranspiled = (_glob, _dest) => options => {
   return equalFileContents(glob, dest, babel, options.dest);
 };
 
-export const touchFile = _file => options => {
-  const [file] = destglob(_file, options.dest);
-  return touch(file);
-};
-
 export const deleteFile = _file => options => {
   const exec = () => {
     const [file] = destglob(_file, options.dest);
@@ -48,4 +43,9 @@ export const never = _msg => msg => {
 
 export const nextTask = () => options => {
   return `Run next ${options.target}`;
+};
+
+export const touchFile = _file => options => {
+  const [file] = destglob(_file, options.dest);
+  return touch(file);
 };

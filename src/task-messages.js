@@ -20,13 +20,14 @@ export const genOnAllMessageFunctions = function* (messages) {
 };
 
 export const genOnMessageFunctions = function* (messages) {
-  const array = messages.map(msg => {
-    if (Array.isArray(msg)) {
-      const [, ...fns] = msg;
-      return fns;
-    }
-    return null;
-  });
+  const array = messages.filter(msg => typeof msg !== 'function')
+    .map(msg => {
+      if (Array.isArray(msg)) {
+        const [, ...fns] = msg;
+        return fns;
+      }
+      return null;
+    });
   yield* array;
 };
 
@@ -51,10 +52,6 @@ export default class TaskMessages {
   }
 
   async next (results) {
-    if (this.nextTask) {
-      return this.nextTask = false;
-    }
-
     let message = this.messages.next();
 
     this.message = message.value;

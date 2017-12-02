@@ -54,14 +54,21 @@ export default class Messages {
   }
 
   async next (results) {
+    if (this.nextTask) {
+      return this.nextTask = false;
+    }
+
     return await this.taskMessages.next(results);
   }
 
   async runCurrentFns (options) {
     const next = await this.taskMessages.runCurrentFns(options);
+
     if (this.taskMessages.nextTask) {
       this.index++;
+      this.nextTask = true;
     }
+
     return next;
   }
 }

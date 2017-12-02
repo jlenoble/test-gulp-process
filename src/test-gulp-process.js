@@ -49,7 +49,8 @@ export default function testGulpProcess (opts) {
 
         async checkResults (results) {
           while (await messages.next(results)) {
-            results.testUpTo(messages.globalFns, messages.message);
+            results.testUpTo(messages.globalFns, messages.message,
+              {included: true});
             results.forgetUpTo(messages.message, {included: true});
             await messages.runCurrentFns(options);
           }

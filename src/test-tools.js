@@ -46,10 +46,9 @@ const isSame = (method, notText) => _glob => options => {
   });
 };
 
-export const isChangedContent = isSame('isChangedContent', 'changed content');
 export const isNewer = isSame('isNewer', 'newer');
-export const isOlder = isSame('isOlder', 'older');
 export const isSameContent = isSame('isSameContent', 'same content');
+export const isChangedContent = isSame('isChangedContent', 'changed content');
 
 export const never = _msg => msg => {
   if (msg.match(new RegExp(_msg))) {

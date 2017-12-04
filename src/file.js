@@ -73,11 +73,6 @@ export default class File {
       stat2 => stat2.mtime > stat1.mtime));
   }
 
-  isOlder () {
-    return cache[this.filepath].stats.then(stat1 => this.stat().then(
-      stat2 => stat2.mtime < stat1.mtime));
-  }
-
   isSameContent () {
     return cache[this.filepath].content.then(content1 => this.content().then(
       content2 => content2 === content1));

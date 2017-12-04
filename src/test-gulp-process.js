@@ -92,7 +92,6 @@ export {
   isDeleted,
   isFound,
   isNewer,
-  isOlder,
   isSameContent,
   never,
   nextTask,

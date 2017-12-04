@@ -88,9 +88,14 @@ export default function testGulpProcess (opts) {
 export {
   compareTranspiled,
   deleteFile,
+  isChangedContent,
   isDeleted,
   isFound,
+  isNewer,
+  isOlder,
+  isSameContent,
   never,
   nextTask,
+  snapshot,
   touchFile,
 } from './test-tools';

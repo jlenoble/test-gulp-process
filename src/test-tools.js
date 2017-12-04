@@ -5,7 +5,9 @@ import touch from 'touch';
 import del from 'del';
 import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
-import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
+import {expectEventuallyDeleted, expectEventuallyFound}
+  from 'stat-again';
+import {cacheFiles, getCachedFiles} from './file';
 
 export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
@@ -34,6 +36,21 @@ export const isFound = _file => options => {
   return expectEventuallyFound(file);
 };
 
+const isSame = (method, notText) => _glob => options => {
+  return getCachedFiles(_glob, options.dest).then(
+    files => Promise.all(files.map(file => file[method]()))).then(truths => {
+    if (!truths.every(yes => yes)) {
+      throw new Error(`${JSON.stringify(_glob)} is not ${notText}`);
+    }
+    return true;
+  });
+};
+
+export const isChangedContent = isSame('isChangedContent', 'changed content');
+export const isNewer = isSame('isNewer', 'newer');
+export const isOlder = isSame('isOlder', 'older');
+export const isSameContent = isSame('isSameContent', 'same content');
+
 export const never = _msg => msg => {
   if (msg.match(new RegExp(_msg))) {
     throw new Error(`Forbidden message "${_msg}" was caught`);
@@ -45,6 +62,10 @@ export const runNextTask = options => {
   return `Run next ${options.task}`;
 };
 export const nextTask = () => runNextTask;
+
+export const snapshot = glb => options => {
+  return cacheFiles(glb, options.dest);
+};
 
 export const touchFile = _file => options => {
   const [file] = destglob(_file, options.dest);

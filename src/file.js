@@ -63,7 +63,6 @@ export default class File {
         if (err) {
           return reject(err);
         }
-        console.log(this.filepath, stats.mtime);
         resolve(stats);
       });
     });

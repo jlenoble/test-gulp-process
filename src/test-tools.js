@@ -47,6 +47,7 @@ const isSame = (method, notText) => _glob => options => {
 };
 
 export const isNewer = isSame('isNewer', 'newer');
+export const isUntouched = isSame('isUntouched', 'untouched');
 export const isSameContent = isSame('isSameContent', 'same content');
 export const isChangedContent = isSame('isChangedContent', 'changed content');
 

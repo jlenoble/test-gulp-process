@@ -63,6 +63,7 @@ export default class File {
         if (err) {
           return reject(err);
         }
+        console.log(this.filepath, stats.mtime);
         resolve(stats);
       });
     });
@@ -70,7 +71,12 @@ export default class File {
 
   isNewer () {
     return cache[this.filepath].stats.then(stat1 => this.stat().then(
-      stat2 => stat2.mtime > stat1.mtime));
+      stat2 => stat2.mtime.getTime() > stat1.mtime.getTime()));
+  }
+
+  isUntouched () {
+    return cache[this.filepath].stats.then(stat1 => this.stat().then(
+      stat2 => stat2.mtime.getTime() === stat1.mtime.getTime()));
   }
 
   isSameContent () {

@@ -93,6 +93,7 @@ export {
   isFound,
   isNewer,
   isSameContent,
+  isUntouched,
   never,
   nextTask,
   snapshot,

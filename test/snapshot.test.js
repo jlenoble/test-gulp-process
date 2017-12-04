@@ -1,5 +1,5 @@
-import testGulpProcess, {snapshot, touchFile, isSameContent, isNewer}
-  from '../src/test-gulp-process';
+import testGulpProcess, {snapshot, touchFile, isSameContent, isNewer,
+  isUntouched} from '../src/test-gulp-process';
 
 describe('Testing snapshots', function () {
   it(`Taking a snapshot and recovering`, testGulpProcess({
@@ -21,7 +21,9 @@ describe('Testing snapshots', function () {
       [`Finished 'exec:transpile:all' after`,
         isNewer('src/test-gulp-process.js'),
         isSameContent('src/test-gulp-process.js'),
-      ],
+        snapshot('src/**/*.js'),
+        isUntouched('src/test-gulp-process.js'),
+        isSameContent('src/test-gulp-process.js')],
     ],
   }));
 });

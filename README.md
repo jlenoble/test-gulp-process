@@ -10,6 +10,9 @@ Helpers to test Gulp processes
     * [`touchFile` helper function](#touchfile-helper-function)
     * [`deleteFile`, `isDeleted` and `isFound` helper functions](#deletefile-isdeleted-and-isfound-helper-functions)
     * [`never` helper function](#never-helper-function)
+    * [`snapshot` helper function](#snapshot-helper-function)
+    * [`isNewer` helper function](#isnewer-helper-function)
+    * [`isSameContent` and `isDifferentContent` helper functions](#issamecontent-and-isdifferentcontent-helper-functions)
   * [License](#license)
 
 
@@ -215,6 +218,54 @@ describe('Testing Gulpfile target', function () {
   }));
 });
 ```
+
+### `snapshot` helper function
+
+`snapshot` takes a glob as argument and registers the content and the timestamps of the corresponding files. This snapshot is used by helpers `isNewer`, `isOlder`, `isSameContent` and `isDifferentContent` to assess the passed-through files.
+
+```js
+import testGulpProcess, {snapshot, touchFile, isSameContent, isNewer}
+  from 'test-gulp-process';
+
+describe('Testing snapshots', function () {
+  it(`Taking a snapshot and recovering`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'tdd:transpile:all'...`,
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+      `Starting 'watch:transpile:all'...`,
+      `Finished 'watch:transpile:all' after`,
+      `Finished 'tdd:transpile:all' after`,
+      [`Finished 'default' after`,
+        snapshot('src/**/*.js'),
+        touchFile('src/test-gulp-process.js')],
+      `Starting 'exec:transpile:all'...`,
+      [`Finished 'exec:transpile:all' after`,
+        isNewer('src/test-gulp-process.js'),
+        isSameContent('src/test-gulp-process.js'),
+      ],
+    ],
+  }));
+});
+```
+
+### `isNewer` helper function
+
+`isNewer(glob)` will throw if glob files have been touched since last `snapshot`.
+
+See [`snapshot` helper function](#snapshot-helper-function) example.
+
+### `isSameContent` and `isDifferentContent` helper functions
+
+`isSameContent(glob)` will throw if the content of at least one of glob files have been changed since last `snapshot`.
+
+`isDifferentContent(glob)` will throw if the content of at least one of glob files have not been changed since last `snapshot`.
+
+See [`snapshot` helper function](#snapshot-helper-function) example.
 
 ## License
 

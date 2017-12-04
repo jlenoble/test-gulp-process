@@ -235,9 +235,11 @@ describe('Testing snapshots', function () {
 });
 ```
 
-### `isNewer` helper function !heading
+### `isNewer` and `isUntouched` helper functions !heading
 
-`isNewer(glob)` will throw if glob files have been touched since last `snapshot`.
+`isNewer(glob)` will throw if at least one of glob files have not been touched since last `snapshot`.
+
+`isUntouched(glob)` will throw if at least one of glob files have been touched since last `snapshot`.
 
 See [`snapshot` helper function](#snapshot-helper-function) example.
 

@@ -11,7 +11,7 @@ Helpers to test Gulp processes
     * [`deleteFile`, `isDeleted` and `isFound` helper functions](#deletefile-isdeleted-and-isfound-helper-functions)
     * [`never` helper function](#never-helper-function)
     * [`snapshot` helper function](#snapshot-helper-function)
-    * [`isNewer` helper function](#isnewer-helper-function)
+    * [`isNewer` and `isUntouched` helper functions](#isnewer-and-isuntouched-helper-functions)
     * [`isSameContent` and `isDifferentContent` helper functions](#issamecontent-and-isdifferentcontent-helper-functions)
   * [License](#license)
 
@@ -253,9 +253,11 @@ describe('Testing snapshots', function () {
 });
 ```
 
-### `isNewer` helper function
+### `isNewer` and `isUntouched` helper functions
 
-`isNewer(glob)` will throw if glob files have been touched since last `snapshot`.
+`isNewer(glob)` will throw if at least one of glob files have not been touched since last `snapshot`.
+
+`isUntouched(glob)` will throw if at least one of glob files have been touched since last `snapshot`.
 
 See [`snapshot` helper function](#snapshot-helper-function) example.
 

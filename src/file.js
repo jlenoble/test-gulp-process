@@ -1,39 +1,21 @@
-import glob from 'glob';
 import fs from 'fs';
-import destglob from 'destglob';
+import {rebase, resolve} from 'polypath';
 
 const cache = {};
 
-export const cacheFiles = (glb, dest) => {
-  return new Promise((resolve, reject) => {
-    glob(glb, (err, files) => {
-      if (err) {
-        return reject(err);
-      }
-      Promise.all(files.map(file => (new File(file, dest)).cache()))
-        .then(resolve, reject);
-    });
-  });
+export const cacheFiles = (glb, base1, base2) => {
+  return resolve(rebase(glb, base1, base2)).then(files => Promise.all(
+    files.map(file => (new File(file)).cache())));
 };
 
-export const getCachedFiles = (glb, dest) => {
-  return new Promise((resolve, reject) => {
-    glob(glb, (err, files) => {
-      if (err) {
-        return reject(err);
-      }
-      Promise.all(files.map(file => {
-        const [_file] = destglob(file, dest);
-        return cache[_file].file;
-      }))
-        .then(resolve, reject);
-    });
-  });
+export const getCachedFiles = (glb, base1, base2) => {
+  return resolve(rebase(glb, base1, base2)).then(files => Promise.all(
+    files.map(file => cache[file] && cache[file].file)));
 };
 
 export default class File {
-  constructor (filepath, dest) {
-    const [file] = destglob(filepath, dest);
+  constructor (filepath, base1, base2) {
+    const [file] = rebase(filepath, base1 || process.cwd(), base2);
     Object.defineProperty(this, 'filepath', {
       value: file,
     });

@@ -1,23 +1,22 @@
 import path from 'path';
-import destglob from 'destglob';
+import {rebase} from 'polypath';
 import equalFileContents from 'equal-file-contents';
 import touch from 'touch';
 import del from 'del';
 import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
-import {expectEventuallyDeleted, expectEventuallyFound}
-  from 'stat-again';
+import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
 import {cacheFiles, getCachedFiles} from './file';
 
 export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
-  const glob = destglob(_glob, options.dest);
+  const glob = rebase(_glob, options.dest);
   return equalFileContents(glob, dest, babel, options.dest);
 };
 
 export const deleteFile = _file => options => {
   const exec = () => {
-    const [file] = destglob(_file, options.dest);
+    const [file] = rebase(_file, options.dest);
     return del(file);
   };
 
@@ -25,13 +24,13 @@ export const deleteFile = _file => options => {
 };
 
 export const isDeleted = _file => options => {
-  const [file] = destglob(_file, options.dest);
+  const [file] = rebase(_file, options.dest);
 
   return expectEventuallyDeleted(file);
 };
 
 export const isFound = _file => options => {
-  const [file] = destglob(_file, options.dest);
+  const [file] = rebase(_file, options.dest);
 
   return expectEventuallyFound(file);
 };
@@ -68,6 +67,6 @@ export const snapshot = glb => options => {
 };
 
 export const touchFile = _file => options => {
-  const [file] = destglob(_file, options.dest);
+  const [file] = rebase(_file, options.dest);
   return touch(file);
 };

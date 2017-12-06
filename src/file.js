@@ -3,6 +3,12 @@ import {rebase, resolve} from 'polypath';
 
 const cache = {};
 
+export const purgeCache = () => {
+  Object.keys(cache).forEach(key => {
+    delete cache[key];
+  });
+};
+
 export const cacheFiles = (glb, base1, base2) => {
   return resolve(rebase(glb, base1, base2)).then(files => Promise.all(
     files.map(file => (new File(file)).cache())));

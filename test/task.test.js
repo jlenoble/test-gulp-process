@@ -4,6 +4,7 @@ describe('Testing Gulpfile task', function () {
   it(`Task is default`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/exec-task.js',
+    debug: true,
 
     messages: [
       `Starting 'default'...`,
@@ -16,6 +17,7 @@ describe('Testing Gulpfile task', function () {
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/exec-task.js',
     task: 'hello',
+    debug: true,
 
     messages: [
       never(`Starting 'default'...`),
@@ -30,6 +32,7 @@ describe('Testing Gulpfile task', function () {
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/exec-task.js',
     task: ['hello', 'default', 'ciao'],
+    debug: true,
 
     messages: [
       never(`Starting 'default'...`),

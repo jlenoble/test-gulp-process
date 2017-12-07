@@ -5,6 +5,7 @@ describe('Testing snapshots', function () {
   it(`Taking a snapshot and recovering`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+    debug: true,
 
     messages: [
       `Starting 'default'...`,

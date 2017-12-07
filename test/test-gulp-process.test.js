@@ -5,14 +5,15 @@ describe('Testing Gulpfile', function () {
   it(`Testing a transpile task`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/exec-transpile-all.js',
+    debug: true,
 
     messages: [
       `Starting 'default'...`,
       `Starting 'exec:transpile:all'...`,
       [`Finished 'exec:transpile:all' after`,
-        compareTranspiled('src/**/*.js', 'build'),
         isFound('src/test-gulp-process.js'),
-        isFound('build/src/test-gulp-process.js')],
+        isFound('build/src/test-gulp-process.js'),
+        compareTranspiled('src/**/*.js', 'build')],
       `Finished 'default' after`,
     ],
   }));
@@ -20,6 +21,7 @@ describe('Testing Gulpfile', function () {
   it(`Testing a tdd transpile task - touching`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+    debug: true,
 
     messages: [
       `Starting 'default'...`,
@@ -40,6 +42,7 @@ describe('Testing Gulpfile', function () {
   it(`Testing a tdd transpile task - deleting`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+    debug: true,
 
     messages: [
       `Starting 'default'...`,

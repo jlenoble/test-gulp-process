@@ -1,14 +1,19 @@
-import {cacheFiles, getCachedFiles, purgeCache} from '../src/file';
+import {cacheFiles, getCachedFiles, purgeCache, setDebug} from '../src/file';
 import path from 'path';
 import {expect} from 'chai';
 
 describe('Testing cache helpers', function () {
+  before(function () {
+    setDebug(true);
+  });
+
   beforeEach(function () {
     purgeCache();
   });
 
   after(function () {
     purgeCache();
+    setDebug(false);
   });
 
   it(`Caching with cacheFiles('src/test-*.js', 'build')`, function () {

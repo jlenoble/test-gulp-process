@@ -1,5 +1,5 @@
 import fs from 'fs';
-import {rebase, resolve} from 'polypath';
+import {rebaseGlob, resolveGlob} from 'polypath';
 import chalk from 'chalk';
 
 const cache = {};
@@ -18,7 +18,7 @@ export const purgeCache = () => {
 };
 
 export const cacheFiles = (glb, base1, base2) => {
-  return resolve(rebase(glb, base1, base2)).then(files => Promise.all(
+  return resolveGlob(rebaseGlob(glb, base1, base2)).then(files => Promise.all(
     files.map(file => {
       if (debug) {
         console.info(`${chalk.cyan('Caching')} file '${chalk.green(file)}'`);
@@ -29,7 +29,7 @@ export const cacheFiles = (glb, base1, base2) => {
 };
 
 export const getCachedFiles = (glb, base1, base2) => {
-  return resolve(rebase(glb, base1, base2)).then(files => Promise.all(
+  return resolveGlob(rebaseGlob(glb, base1, base2)).then(files => Promise.all(
     files.map(file => {
       const f = cache[file] && cache[file].file;
       if (debug) {
@@ -47,7 +47,7 @@ export const getCachedFiles = (glb, base1, base2) => {
 
 export default class File {
   constructor (filepath, base1, base2) {
-    const [file] = rebase(filepath, base1 || process.cwd(), base2);
+    const [file] = rebaseGlob(filepath, base1 || process.cwd(), base2);
     Object.defineProperty(this, 'filepath', {
       value: file,
     });

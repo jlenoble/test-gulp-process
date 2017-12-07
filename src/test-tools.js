@@ -1,5 +1,5 @@
 import path from 'path';
-import {rebase} from 'polypath';
+import {rebaseGlob} from 'polypath';
 import equalFileContents from 'equal-file-contents';
 import touch from 'touch';
 import del from 'del';
@@ -11,7 +11,7 @@ import {getDebug, cacheFiles, getCachedFiles} from './file';
 
 export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
-  const glob = rebase(_glob, options.dest);
+  const glob = rebaseGlob(_glob, options.dest);
   if (getDebug()) {
     console.info(`${chalk.cyan('Checking')} transpilation of ${
       chalk.green(glob)}`);
@@ -21,7 +21,7 @@ export const compareTranspiled = (_glob, _dest) => options => {
 
 export const deleteFile = _file => options => {
   const exec = () => {
-    const [file] = rebase(_file, options.dest);
+    const [file] = rebaseGlob(_file, options.dest);
     if (getDebug()) {
       console.info(`${chalk.cyan('Deleting')} ${chalk.green(file)}`);
     }
@@ -32,7 +32,7 @@ export const deleteFile = _file => options => {
 };
 
 export const isDeleted = _file => options => {
-  const [file] = rebase(_file, options.dest);
+  const [file] = rebaseGlob(_file, options.dest);
   if (getDebug()) {
     console.info(`${chalk.cyan('Checking')} whether ${
       chalk.green(file)} is deleted`);
@@ -41,7 +41,7 @@ export const isDeleted = _file => options => {
 };
 
 export const isFound = _file => options => {
-  const [file] = rebase(_file, options.dest);
+  const [file] = rebaseGlob(_file, options.dest);
   if (getDebug()) {
     console.info(`${chalk.cyan('Checking')} whether ${
       chalk.green(file)} can be found`);
@@ -89,7 +89,7 @@ export const snapshot = glb => options => {
 };
 
 export const touchFile = _file => options => {
-  const [file] = rebase(_file, options.dest);
+  const [file] = rebaseGlob(_file, options.dest);
   if (getDebug()) {
     console.info(`${chalk.cyan('Touching')} file ${chalk.green(file)}`);
   }

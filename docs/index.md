@@ -42,7 +42,7 @@ describe('Testing gulpfile', function () {
 
 * `sources`: A glob pointing to the files to be used as sources for the test.
 * `gulpfile`: The gulpfile to be used for the test.
-* `target` (optional): The target with which to call `gulp`.
+* `task` (optional): The task with which to call `gulp`. See [`nextTask` helper function](#nexttask-helper-function).
 * `messages`: An array of all the messages to be expected, in order, and of functions to be executed, in order. (see [Using callbacks](#using-callbacks)).
 
 ## Using callbacks !heading
@@ -69,7 +69,45 @@ describe('Testing gulpfile', function () {
 });
 ```
 
+## CAVEAT with callbacks !heading
+
+Callbacks are not called at the actual operation time but when its logging message has been caught by the test runner. Therefore only use the callbacks when the tested process is idle (has finished its last batch of operations).
+
+This means either when the spawned gulp processed has returned or when it is watching for a change that you can trigger explicitly with callbacks such as [`touchFile`](#touchfile-helper-function) or [`nextTask`](#nexttask-helper-function). See the [snapshot test](https://github.com/jlenoble/test-gulp-process/blob/master/test/snapshot.test.js) as an example.
+
 ## Helper callbacks !heading
+
+### `nextTask` helper function !heading
+
+```js
+import testGulpProcess, {never, nextTask} from 'test-gulp-process';
+
+describe('Testing Gulpfile task', function () {
+  it(`Series of tasks`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-task.js',
+    task: ['hello', 'default', 'ciao'],
+
+    messages: [
+      never(`Starting 'default'...`),
+      never(`Starting 'ciao'...`),
+      `Starting 'hello'...`,
+      'hello',
+      [`Finished 'hello' after`, nextTask()],
+      never(`Starting 'hello'...`),
+      never(`Starting 'ciao'...`),
+      `Starting 'default'...`,
+      'coucou',
+      [`Finished 'default' after`, nextTask()],
+      never(`Starting 'hello'...`),
+      never(`Starting 'default'...`),
+      `Starting 'ciao'...`,
+      'ciao',
+      `Finished 'ciao' after`,
+    ],
+  }));
+});
+```
 
 ### `compareTranspiled` helper function !heading
 
@@ -179,16 +217,16 @@ describe('Testing Gulpfile', function () {
 
 `never` forbids the occurrence of a specific message among all the captured messages.
 
-In the following example, as we launch the process for target `hello`, the message concerning the `default` target should never appear.
+In the following example, as we launch the process for task `hello`, the message concerning the `default` task should never appear.
 
 ```js
 import testGulpProcess, {never} from 'test-gulp-process';
 
-describe('Testing Gulpfile target', function () {
-  it(`Target is not default`, testGulpProcess({
+describe('Testing Gulpfile task', function () {
+  it(`Task is not default`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
-    gulpfile: 'test/gulpfiles/exec-target.js',
-    target: 'hello',
+    gulpfile: 'test/gulpfiles/exec-task.js',
+    task: 'hello',
 
     messages: [
       never(`Starting 'default'...`),

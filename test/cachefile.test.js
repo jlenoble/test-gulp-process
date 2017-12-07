@@ -43,4 +43,15 @@ describe('Testing cache helpers', function () {
             f => path.join(process.cwd(), 'build/src', f)));
       });
     });
+
+  it(`Caching with cacheFiles(['src/test-*.js', '!src/test-tools.js'],` +
+  ` 'build')`, function () {
+    return cacheFiles(['src/test-*.js', '!src/test-tools.js'], 'build')
+      .then(() =>
+        getCachedFiles(['src/test-*.js', '!src/test-tools.js'], 'build'))
+      .then(files => {
+        expect(files.map(file => file.filepath)).to.eql(
+          [path.join(process.cwd(), 'build/src', 'test-gulp-process.js')]);
+      });
+  });
 });

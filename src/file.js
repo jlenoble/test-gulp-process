@@ -22,7 +22,6 @@ export const cacheFiles = (glb, base1, base2) => {
     files.map(file => {
       if (debug) {
         console.info(`${chalk.cyan('Caching')} file '${chalk.green(file)}'`);
-        console.info(`Cache size is now: ${Object.keys(cache).length}`);
       }
       return (new File(file)).cache();
     })));
@@ -57,6 +56,9 @@ export default class File {
     const promises = [this.content(), this.stat()];
     const [content, stats] = promises;
     cache[this.filepath] = {file: this, content, stats};
+    if (debug) {
+      console.info(`Cache size is now: ${Object.keys(cache).length}`);
+    }
     return Promise.all(promises);
   }
 

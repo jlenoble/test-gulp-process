@@ -1,34 +1,7 @@
 import {waitForMessage} from './messages-helpers';
 
-export const genMessages = function* (messages) {
-  const array = messages.map(msg => {
-    return Array.isArray(msg) ? msg[0] : msg;
-  }).filter(msg => typeof msg === 'string');
-  yield* array;
-};
-
-export const genOnAllMessageFunctions = function* (messages) {
-  const array = [];
-  messages.every(msg => {
-    const yes = typeof msg === 'function';
-    if (yes) {
-      array.push(msg);
-    }
-    return yes;
-  });
-  yield* array;
-};
-
-export const genOnMessageFunctions = function* (messages) {
-  const array = messages.filter(msg => typeof msg !== 'function')
-    .map(msg => {
-      if (Array.isArray(msg)) {
-        const [, ...fns] = msg;
-        return fns;
-      }
-      return null;
-    });
-  yield* array;
+const genMessages = function* (messages) {
+  yield* messages;
 };
 
 export default class TaskMessages {
@@ -41,21 +14,27 @@ export default class TaskMessages {
         value: genMessages(messages),
       },
 
-      onMessageFns: {
-        value: genOnMessageFunctions(messages),
-      },
-
       globalFns: {
-        value: [...genOnAllMessageFunctions(messages)],
+        value: [],
       },
     });
   }
 
   async next (results) {
-    let message = this.messages.next();
+    const message = this.messages.next();
+    const value = message.value;
 
-    this.message = message.value;
-    this.fns = this.onMessageFns.next().value;
+    if (typeof value === 'string') {
+      this.message = value;
+      this.fns = null;
+    } else if (Array.isArray(value)) {
+      const [msg, ...fns] = value;
+      this.message = msg;
+      this.fns = fns;
+    } else if (typeof value === 'function') {
+      this.globalFns.push(value);
+      return this.next(results);
+    }
 
     return !message.done && await waitForMessage(results, this.message);
   }

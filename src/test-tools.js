@@ -1,7 +1,7 @@
 import path from 'path';
 import {rebaseGlob} from 'polypath';
 import equalFileContents from 'equal-file-contents';
-import touch from 'touch';
+import touchMs from 'touch-ms';
 import del from 'del';
 import chalk from 'chalk';
 import babel from 'gulp-babel';
@@ -93,5 +93,5 @@ export const touchFile = _file => options => {
   if (getDebug()) {
     console.info(`${chalk.cyan('Touching')} file ${chalk.green(file)}`);
   }
-  return touch(file);
+  return touchMs(file);
 };

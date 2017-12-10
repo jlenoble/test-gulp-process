@@ -8,7 +8,7 @@ const repeat = (action, interval = 200, maxDuration = 4000) => {
       reject(new Error('Waiting too long for child process to finish'));
     };
 
-    intervalId = setInterval(() => {
+    const autoCleanAction = () => {
       try {
         if (action()) {
           clearTimeout(timeoutId);
@@ -20,9 +20,12 @@ const repeat = (action, interval = 200, maxDuration = 4000) => {
         clearInterval(intervalId);
         reject(e);
       }
-    }, interval);
+    };
 
+    intervalId = setInterval(autoCleanAction, interval);
     timeoutId = setTimeout(timeout, maxDuration);
+
+    autoCleanAction(); // Start immediately
   });
 };
 

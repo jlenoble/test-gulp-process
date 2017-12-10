@@ -14,7 +14,7 @@ export default class TaskMessages {
         value: genMessages(messages),
       },
 
-      queuedMessages: {
+      parallelMessages: {
         value: [],
       },
 
@@ -25,15 +25,15 @@ export default class TaskMessages {
   }
 
   async next (results) {
-    if (this.queuedMessages.length) {
+    if (this.parallelMessages.length) {
       // Queued messages are treated as 'equivalent'.
       // We search for the first to appear in results and expose it as
       // this.message while removing it from the queue.
       // This tries to rectify the mess that occurs when tasks are run
       // in parallel.
-      await waitForMessage(results, this.queuedMessages[0]);
+      await waitForMessage(results, this.parallelMessages[0]);
 
-      const indices = this.queuedMessages.map(msg => {
+      const indices = this.parallelMessages.map(msg => {
         const index = results.allMessages.findIndex(
           el => el.match(new RegExp(msg)));
         if (index === -1) {
@@ -53,8 +53,8 @@ export default class TaskMessages {
         return idx1;
       });
 
-      this.message = this.queuedMessages[pos];
-      this.queuedMessages.splice(pos, 1);
+      this.message = this.parallelMessages[pos];
+      this.parallelMessages.splice(pos, 1);
 
       return true;
     }
@@ -68,7 +68,8 @@ export default class TaskMessages {
       this.fns = null;
     } else if (Array.isArray(value)) {
       this.fns = value.filter(fn => typeof fn === 'function');
-      this.queuedMessages.push(...value.filter(fn => typeof fn !== 'function'));
+      this.parallelMessages.push(...value.filter(
+        fn => typeof fn !== 'function'));
       return this.next(results);
     } else if (typeof value === 'function') {
       this.globalFns.push(value);

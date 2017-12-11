@@ -35,7 +35,8 @@ const testMessage = (results, message) => {
 };
 
 function waitForMessage (results, message) {
-  return repeat(() => testMessage(results, message)).catch(err => {
+  const msg = message.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+  return repeat(() => testMessage(results, msg)).catch(err => {
     if (err.message.match(/Waiting too long for child process to finish/)) {
       throw new Error(`Waiting too long for child process to finish:
 Message '${message}' was never intercepted`);

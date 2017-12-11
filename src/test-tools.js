@@ -84,6 +84,33 @@ export const runNextTask = options => {
 };
 export const nextTask = () => runNextTask;
 
+export class ParallelMessages {
+  constructor (queues) {
+    this.queues = queues.map(queue => queue.concat());
+    this.messages = this.queues.map(queue => queue.shift());
+    this.notStarted = true;
+  }
+
+  next (foundMessage) {
+    if (this.notStarted) {
+      this.notStarted = false;
+      return this.messages;
+    } else {
+      const index = this.messages.findIndex(msg => msg === foundMessage);
+      const queue = this.queues[index];
+      if (queue.length) {
+        this.messages[index] = queue.shift();
+        return [this.messages[index]];
+      } else {
+        this.messages.splice(index, 1);
+        this.queues.splice(index, 1);
+        return [];
+      }
+    }
+  }
+}
+export const parallel = (...queues) => new ParallelMessages(queues);
+
 export const snapshot = glb => options => {
   return cacheFiles(glb, options.dest);
 };

@@ -99,6 +99,7 @@ export {
   isUntouched,
   never,
   nextTask,
+  parallel,
   snapshot,
   touchFile,
 } from './test-tools';

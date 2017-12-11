@@ -92,21 +92,30 @@ export class ParallelMessages {
   }
 
   next (foundMessage) {
+    let nextMessages;
+
     if (this.notStarted) {
       this.notStarted = false;
-      return this.messages;
+      nextMessages = this.messages;
     } else {
       const index = this.messages.findIndex(msg => msg === foundMessage);
       const queue = this.queues[index];
       if (queue.length) {
         this.messages[index] = queue.shift();
-        return [this.messages[index]];
+        nextMessages = [this.messages[index]];
       } else {
         this.messages.splice(index, 1);
         this.queues.splice(index, 1);
-        return [];
+        nextMessages = [];
       }
     }
+
+    if (getDebug()) {
+      console.info(`Current ${chalk.cyan('parallel')} messages '${
+        chalk.green(JSON.stringify(this.messages))}'`);
+    }
+
+    return nextMessages;
   }
 }
 export const parallel = (...queues) => new ParallelMessages(queues);

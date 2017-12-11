@@ -65,4 +65,35 @@ describe('Testing Gulpfile', function () {
       expect(err.message).to.match(/'hello4' was never intercepted/);
     },
   }));
+
+  it(`Testing parallel queues - special characters`, testGulpProcess({
+    sources: ['src/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-queue-bugfix1.js',
+    debug: true,
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'exec:transpile'...`,
+      `Starting 'exec:copy'...`,
+      parallel(
+        [`Task 'copy' (SRC): src/gulptask.js`,
+          `Task 'copy' (NWR): src/gulptask.js`],
+        [`Task 'copy' (SRC): 1 item`,
+          `Task 'copy' (NWR): 1 item`]
+      ),
+      `Finished 'exec:copy' after`,
+      `Starting 'transpile'...`,
+      parallel(
+        [`Task 'transpile' (SRC): tmp/src/gulptask.js`,
+          `Task 'transpile' (NWR): tmp/src/gulptask.js`,
+          `Task 'transpile' (DST): tmp/src/gulptask.js`],
+        [`Task 'transpile' (SRC): 1 item`,
+          `Task 'transpile' (NWR): 1 item`,
+          `Task 'transpile' (DST): 1 item`]
+      ),
+      `Finished 'transpile' after`,
+      `Finished 'exec:transpile' after`,
+      `Finished 'default' after`,
+    ],
+  }));
 });

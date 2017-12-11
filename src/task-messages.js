@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+import {getDebug} from './file';
 import {waitForMessage} from './messages-helpers';
 import {ParallelMessages} from './test-tools';
 
@@ -57,6 +59,11 @@ export default class TaskMessages {
       return this.next(results);
     }
 
+    if (!message.done && getDebug()) {
+      console.info(`${chalk.cyan('Waiting for')} message '${
+        chalk.green(this.message)}'`);
+    }
+
     return !message.done && await waitForMessage(results, this.message);
   }
 
@@ -66,11 +73,19 @@ export default class TaskMessages {
     // this.message while removing it from the buffer.
     // This tries to rectify the mess that occurs when tasks are run
     // in parallel.
-    await waitForMessage(results, this.currentParallelMessages[0]);
+    let searchedMessage = this.currentParallelMessages[0];
+
+    if (getDebug()) {
+      console.info(`${chalk.cyan('Waiting for')} parallel message '${
+        chalk.green(searchedMessage)}'`);
+    }
+
+    await waitForMessage(results, searchedMessage);
 
     const indices = this.currentParallelMessages.map(msg => {
+      const _msg = msg.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
       const index = results.allMessages.findIndex(
-        el => el.match(new RegExp(msg)));
+        el => el.match(new RegExp(_msg)));
       if (index === -1) {
         return null;
       }
@@ -90,6 +105,13 @@ export default class TaskMessages {
 
     this.message = this.currentParallelMessages[pos];
     this.currentParallelMessages.splice(pos, 1);
+
+    if (getDebug()) {
+      if (this.message !== searchedMessage) {
+        console.info(`${chalk.cyan('But')} parallel message '${
+          chalk.green(this.message)}' was found ${chalk.cyan('first')}`);
+      }
+    }
 
     return true;
   }

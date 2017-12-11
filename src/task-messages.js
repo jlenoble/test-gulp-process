@@ -26,40 +26,10 @@ export default class TaskMessages {
 
   async next (results) {
     if (this.parallelMessages.length) {
-      // Queued messages are treated as 'equivalent'.
-      // We search for the first to appear in results and expose it as
-      // this.message while removing it from the queue.
-      // This tries to rectify the mess that occurs when tasks are run
-      // in parallel.
-      await waitForMessage(results, this.parallelMessages[0]);
-
-      const indices = this.parallelMessages.map(msg => {
-        const index = results.allMessages.findIndex(
-          el => el.match(new RegExp(msg)));
-        if (index === -1) {
-          return null;
-        }
-        const pos = results.allMessages[index].indexOf(msg);
-        return [index, pos];
-      });
-
-      let pos = 0;
-      indices.reduce((idx1, idx2, i) => {
-        if (idx2 && (idx2[0] < idx1[0] ||
-          (idx2[0] === idx1[0] && idx2[1] < idx1[1]))) {
-          pos = i;
-          return idx2;
-        }
-        return idx1;
-      });
-
-      this.message = this.parallelMessages[pos];
-      this.parallelMessages.splice(pos, 1);
-
-      return true;
+      return this.nextParallel(results);
     }
 
-    // Queue is empty, process next message
+    // No parallel messages left, process next message
     const message = this.messages.next();
     const value = message.value;
 
@@ -77,6 +47,40 @@ export default class TaskMessages {
     }
 
     return !message.done && await waitForMessage(results, this.message);
+  }
+
+  async nextParallel (results) {
+    // Parallel messages are treated as 'equivalent'.
+    // We search for the first to appear in results and expose it as
+    // this.message while removing it from the buffer.
+    // This tries to rectify the mess that occurs when tasks are run
+    // in parallel.
+    await waitForMessage(results, this.parallelMessages[0]);
+
+    const indices = this.parallelMessages.map(msg => {
+      const index = results.allMessages.findIndex(
+        el => el.match(new RegExp(msg)));
+      if (index === -1) {
+        return null;
+      }
+      const pos = results.allMessages[index].indexOf(msg);
+      return [index, pos];
+    });
+
+    let pos = 0;
+    indices.reduce((idx1, idx2, i) => {
+      if (idx2 && (idx2[0] < idx1[0] ||
+        (idx2[0] === idx1[0] && idx2[1] < idx1[1]))) {
+        pos = i;
+        return idx2;
+      }
+      return idx1;
+    });
+
+    this.message = this.parallelMessages[pos];
+    this.parallelMessages.splice(pos, 1);
+
+    return true;
   }
 
   async runCurrentFns (options) {

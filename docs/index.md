@@ -241,7 +241,7 @@ describe('Testing Gulpfile task', function () {
 
 ### `parallel` helper function !heading
 
-`parallel` helps with intercepting concurrent logging threads, typically when running `gulp`tasks in parallel.
+`parallel` helps with intercepting concurrent logging threads, typically when running `gulp` tasks in parallel.
 
 ```js
 import testGulpProcess, {parallel} from 'test-gulp-process';

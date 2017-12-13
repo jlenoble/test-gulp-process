@@ -85,11 +85,10 @@ export const runNextTask = options => {
 export const nextTask = () => runNextTask;
 
 export class ParallelMessages {
-  constructor (queues, options) {
+  constructor (queues) {
     this.queues = queues.map(queue => queue.concat());
     this.messages = this.queues.map(queue => queue.shift());
     this.notStarted = true;
-    this.debug = options && options.debug;
   }
 
   next (foundMessage) {
@@ -117,6 +116,10 @@ export class ParallelMessages {
     }
 
     return nextMessages;
+  }
+
+  setDebug (debug) {
+    this.debug = debug;
   }
 }
 export const parallel = (...queues) => new ParallelMessages(queues);

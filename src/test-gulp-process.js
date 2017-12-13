@@ -11,7 +11,7 @@ export default function testGulpProcess (opts) {
     this.timeout(opts.timeout // eslint-disable-line no-invalid-this
       || 20000);
 
-    const messages = new Messages(opts.messages);
+    const messages = new Messages(opts.messages, opts);
     const dest = newDest();
 
     let tasks = opts.task || ['default'];

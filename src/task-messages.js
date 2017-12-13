@@ -59,6 +59,7 @@ export default class TaskMessages {
       return this.next(results);
     } else if (value instanceof ParallelMessages) {
       this.parallelMessages = value;
+      value.setDebug(this.debug);
       return this.next(results);
     }
 
@@ -79,7 +80,8 @@ export default class TaskMessages {
     let searchedMessage = this.currentParallelMessages[0];
 
     if (this.debug) {
-      console.info(`${chalk.cyan('Waiting for')} parallel message '${
+      console.info(`${chalk.cyan('Waiting for')} ${
+        this.currentParallelMessages.length ? 'parallel ': ''}message '${
         chalk.green(searchedMessage)}'`);
     }
 

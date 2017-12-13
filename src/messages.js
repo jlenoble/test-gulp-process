@@ -1,7 +1,7 @@
 import TaskMessages from './task-messages';
 import {runNextTask} from './test-tools';
 
-const splitMessages = messages => {
+const splitMessages = (messages, options) => {
   const msgs = [];
   const taskMessages = [];
 
@@ -12,20 +12,20 @@ const splitMessages = messages => {
       const [, ...fns] = msg;
 
       if (fns.length && fns.some(fn => fn === runNextTask)) {
-        taskMessages.push(new TaskMessages(msgs));
+        taskMessages.push(new TaskMessages(msgs, options));
         msgs.length = 0;
       }
     }
   }
 
-  taskMessages.push(new TaskMessages(msgs));
+  taskMessages.push(new TaskMessages(msgs, options));
 
   return taskMessages;
 };
 
 export default class Messages {
-  constructor (messages) {
-    const taskMessages = splitMessages(messages);
+  constructor (messages, options) {
+    const taskMessages = splitMessages(messages, options);
 
     Object.defineProperties(this, {
       index: {

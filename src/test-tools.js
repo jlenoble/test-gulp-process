@@ -7,12 +7,12 @@ import chalk from 'chalk';
 import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
 import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
-import {getDebug, cacheFiles, getCachedFiles} from './file';
+import {cacheFiles, getCachedFiles} from './file';
 
 export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
   const glob = rebaseGlob(_glob, options.dest);
-  if (getDebug()) {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('Checking')} transpilation of ${
       chalk.green(glob)}`);
   }
@@ -22,7 +22,7 @@ export const compareTranspiled = (_glob, _dest) => options => {
 export const deleteFile = _file => options => {
   const exec = () => {
     const [file] = rebaseGlob(_file, options.dest);
-    if (getDebug()) {
+    if (options && options.debug) {
       console.info(`${chalk.cyan('Deleting')} ${chalk.green(file)}`);
     }
     return del(file);
@@ -33,7 +33,7 @@ export const deleteFile = _file => options => {
 
 export const isDeleted = _file => options => {
   const [file] = rebaseGlob(_file, options.dest);
-  if (getDebug()) {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('Checking')} whether ${
       chalk.green(file)} is deleted`);
   }
@@ -42,18 +42,18 @@ export const isDeleted = _file => options => {
 
 export const isFound = _file => options => {
   const [file] = rebaseGlob(_file, options.dest);
-  if (getDebug()) {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('Checking')} whether ${
       chalk.green(file)} can be found`);
   }
   return expectEventuallyFound(file);
 };
 
-const isSame = (method, notText) => _glob => options => {
-  return getCachedFiles(_glob, options.dest).then(
+const isSame = (method, notText) => glob => options => {
+  return getCachedFiles({glob, base1: options.dest}).then(
     files => Promise.all(files.map(file => file[method]()))).then(truths => {
     if (!truths.every(yes => yes)) {
-      throw new Error(`${JSON.stringify(_glob)} is not ${notText}`);
+      throw new Error(`${JSON.stringify(glob)} is not ${notText}`);
     }
     return true;
   });
@@ -64,8 +64,8 @@ export const isUntouched = isSame('isUntouched', 'untouched');
 export const isSameContent = isSame('isSameContent', 'same content');
 export const isChangedContent = isSame('isChangedContent', 'changed content');
 
-export const never = _msg => msg => {
-  if (getDebug()) {
+export const never = _msg => (msg, options) => {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('ensuring')} '${chalk.green(
       msg)}' doesn't match '${chalk.green(_msg)}'`);
   }
@@ -76,7 +76,7 @@ export const never = _msg => msg => {
 };
 
 export const runNextTask = options => {
-  if (getDebug()) {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('Running')} next task '${
       chalk.green(options.task)}'`);
   }
@@ -85,10 +85,11 @@ export const runNextTask = options => {
 export const nextTask = () => runNextTask;
 
 export class ParallelMessages {
-  constructor (queues) {
+  constructor (queues, options) {
     this.queues = queues.map(queue => queue.concat());
     this.messages = this.queues.map(queue => queue.shift());
     this.notStarted = true;
+    this.debug = options && options.debug;
   }
 
   next (foundMessage) {
@@ -110,7 +111,7 @@ export class ParallelMessages {
       }
     }
 
-    if (getDebug()) {
+    if (this.debug) {
       console.info(`Current ${chalk.cyan('parallel')} messages '${
         chalk.green(JSON.stringify(this.messages))}'`);
     }
@@ -120,13 +121,14 @@ export class ParallelMessages {
 }
 export const parallel = (...queues) => new ParallelMessages(queues);
 
-export const snapshot = glb => options => {
-  return cacheFiles(glb, options.dest);
+export const snapshot = glob => options => {
+  return cacheFiles({glob, base1: options.dest,
+    debug: options && options.debug});
 };
 
 export const touchFile = _file => options => {
   const [file] = rebaseGlob(_file, options.dest);
-  if (getDebug()) {
+  if (options && options.debug) {
     console.info(`${chalk.cyan('Touching')} file ${chalk.green(file)}`);
   }
   return touchMs(file);

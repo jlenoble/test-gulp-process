@@ -3,13 +3,6 @@ import {rebaseGlob, resolveGlob} from 'polypath';
 import chalk from 'chalk';
 
 const cache = {};
-let debug = false;
-
-export const setDebug = yes => {
-  debug = !!yes;
-};
-
-export const getDebug = () => debug;
 
 export const purgeCache = () => {
   Object.keys(cache).forEach(key => {
@@ -17,18 +10,18 @@ export const purgeCache = () => {
   });
 };
 
-export const cacheFiles = (glb, base1, base2) => {
-  return resolveGlob(rebaseGlob(glb, base1, base2)).then(files => Promise.all(
+export const cacheFiles = ({glob, base1, base2, debug}) => {
+  return resolveGlob(rebaseGlob(glob, base1, base2)).then(files => Promise.all(
     files.map(file => {
       if (debug) {
         console.info(`${chalk.cyan('Caching')} file '${chalk.green(file)}'`);
       }
-      return (new File(file)).cache();
+      return (new File({filepath: file, debug})).cache();
     })));
 };
 
-export const getCachedFiles = (glb, base1, base2) => {
-  return resolveGlob(rebaseGlob(glb, base1, base2)).then(files => Promise.all(
+export const getCachedFiles = ({glob, base1, base2, debug}) => {
+  return resolveGlob(rebaseGlob(glob, base1, base2)).then(files => Promise.all(
     files.map(file => {
       const f = cache[file] && cache[file].file;
       if (debug) {
@@ -45,10 +38,15 @@ export const getCachedFiles = (glb, base1, base2) => {
 };
 
 export default class File {
-  constructor (filepath, base1, base2) {
+  constructor ({filepath, base1, base2, debug}) {
     const [file] = rebaseGlob(filepath, base1 || process.cwd(), base2);
-    Object.defineProperty(this, 'filepath', {
-      value: file,
+    Object.defineProperties(this, {
+      filepath: {
+        value: file,
+      },
+      debug: {
+        value: debug,
+      },
     });
   }
 
@@ -56,7 +54,7 @@ export default class File {
     const promises = [this.content(), this.stat()];
     const [content, stats] = promises;
     cache[this.filepath] = {file: this, content, stats};
-    if (debug) {
+    if (this.debug) {
       console.info(`Cache size is now: ${Object.keys(cache).length}`);
     }
     return Promise.all(promises);
@@ -79,7 +77,7 @@ export default class File {
         if (err) {
           return reject(err);
         }
-        if (debug) {
+        if (this.debug) {
           console.info(`${chalk.green(this.filepath)} was last modified: ${
             chalk.magenta(stats.mtime)}`);
         }
@@ -92,7 +90,7 @@ export default class File {
     return cache[this.filepath].stats.then(stat1 => this.stat().then(
       stat2 => {
         const yes = stat2.mtime.getTime() > stat1.mtime.getTime();
-        if (yes && debug) {
+        if (yes && this.debug) {
           console.info(`${chalk.green(this.filepath)} is ${
             chalk.cyan('newer')}`);
           console.info(`diff is ${chalk.cyan(stat2.mtime.getTime() -
@@ -106,7 +104,7 @@ export default class File {
     return cache[this.filepath].stats.then(stat1 => this.stat().then(
       stat2 => {
         const yes = stat2.mtime.getTime() === stat1.mtime.getTime();
-        if (yes && debug) {
+        if (yes && this.debug) {
           console.info(`${chalk.green(this.filepath)} is ${
             chalk.cyan('untouched')}`);
         }
@@ -118,7 +116,7 @@ export default class File {
     return cache[this.filepath].content.then(content1 => this.content().then(
       content2 => {
         const yes = content2 === content1;
-        if (yes && debug) {
+        if (yes && this.debug) {
           console.info(`${chalk.green(this.filepath)} is ${
             chalk.cyan('unchanged')}`);
         }
@@ -130,7 +128,7 @@ export default class File {
     return cache[this.filepath].content.then(content1 => this.content().then(
       content2 => {
         const yes = content2 !== content1;
-        if (yes && debug) {
+        if (yes && this.debug) {
           console.info(`${chalk.green(this.filepath)} is ${
             chalk.cyan('changed')}`);
         }

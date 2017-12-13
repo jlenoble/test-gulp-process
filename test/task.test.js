@@ -78,15 +78,19 @@ describe('Testing Gulpfile task', function () {
         expect(err).to.match(/Waiting too long for child process to finish:/);
         expect(err).to.match(
           /Message 'Starting 'default'...' was never intercepted/);
-        console.info(`${chalk.cyan('Intercepted')} expected message ${
-          chalk.magenta(err.message)}`);
+        if (this.debug) {
+          console.info(`${chalk.cyan('Intercepted')} expected message ${
+            chalk.magenta(err.message)}`);
+        }
         return Promise.resolve(err.results);
       } catch (e) {
         try {
           expect(err).to.match(
             /Message 'Starting 'ciao'...' was never intercepted/);
-          console.info(`${chalk.cyan('Intercepted')} expected message ${
-            chalk.magenta(err.message)}`);
+          if (this.debug) {
+            console.info(`${chalk.cyan('Intercepted')} expected message ${
+              chalk.magenta(err.message)}`);
+          }
           return Promise.resolve(err.results);
         } catch (e) {
           return Promise.reject(err);

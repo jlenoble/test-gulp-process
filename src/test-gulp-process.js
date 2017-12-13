@@ -5,14 +5,11 @@ import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules}
   from './setup-helpers';
 import {cleanUp, onError} from './cleanup-helpers';
 import Messages from './messages';
-import {setDebug} from './file';
 
 export default function testGulpProcess (opts) {
   return function () {
     this.timeout(opts.timeout // eslint-disable-line no-invalid-this
       || 20000);
-
-    setDebug(opts.debug);
 
     const messages = new Messages(opts.messages);
     const dest = newDest();

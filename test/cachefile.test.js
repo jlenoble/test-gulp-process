@@ -1,10 +1,10 @@
-import {cacheFiles, getCachedFiles, purgeCache, setDebug} from '../src/file';
+import {cacheFiles, getCachedFiles, purgeCache} from '../src/file';
 import path from 'path';
 import {expect} from 'chai';
 
 describe('Testing cache helpers', function () {
   before(function () {
-    setDebug(true);
+    this.debug = true; // eslint-disable-line no-invalid-this
   });
 
   beforeEach(function () {
@@ -13,42 +13,57 @@ describe('Testing cache helpers', function () {
 
   after(function () {
     purgeCache();
-    setDebug(false);
   });
 
-  it(`Caching with cacheFiles('src/test-*.js', 'build')`, function () {
-    return cacheFiles('src/test-*.js', 'build').then(() =>
-      getCachedFiles('src/test-*.js', 'build')).then(files => {
-      expect(files.map(file => file.filepath)).to.eql(
-        ['test-gulp-process.js', 'test-tools.js'].map(
-          f => path.join(process.cwd(), 'build/src', f)));
-    });
-  });
-
-  it(`Caching with cacheFiles('build/src/test-*.js')`, function () {
-    return cacheFiles('build/src/test-*.js').then(() =>
-      getCachedFiles('build/src/test-*.js')).then(files => {
-      expect(files.map(file => file.filepath)).to.eql(
-        ['test-gulp-process.js', 'test-tools.js'].map(
-          f => path.join(process.cwd(), 'build/src', f)));
-    });
-  });
-
-  it(`Caching with cacheFiles('src/test-*.js', 'src', 'build/src')`,
+  it(`Caching with cacheFiles({glob: 'src/test-*.js', base1: 'build'})`,
     function () {
-      return cacheFiles('src/test-*.js', 'src', 'build/src').then(() =>
-        getCachedFiles('src/test-*.js', 'src', 'build/src')).then(files => {
+      return cacheFiles({glob: 'src/test-*.js', base1: 'build',
+        debug: this.debug}).then(() => // eslint-disable-line no-invalid-this
+        getCachedFiles({glob: 'src/test-*.js', base1: 'build',
+          // eslint-disable-next-line no-invalid-this
+          debug: this.debug})).then(files => {
         expect(files.map(file => file.filepath)).to.eql(
           ['test-gulp-process.js', 'test-tools.js'].map(
             f => path.join(process.cwd(), 'build/src', f)));
       });
     });
 
-  it(`Caching with cacheFiles(['src/test-*.js', '!src/test-tools.js'],` +
-  ` 'build')`, function () {
-    return cacheFiles(['src/test-*.js', '!src/test-tools.js'], 'build')
+  it(`Caching with cacheFiles({glob: 'build/src/test-*.js'})`, function () {
+    return cacheFiles({glob: 'build/src/test-*.js',
+      debug: this.debug}).then(() => // eslint-disable-line no-invalid-this
+      getCachedFiles({glob: 'build/src/test-*.js',
+        // eslint-disable-next-line no-invalid-this
+        debug: this.debug})).then(files => {
+      expect(files.map(file => file.filepath)).to.eql(
+        ['test-gulp-process.js', 'test-tools.js'].map(
+          f => path.join(process.cwd(), 'build/src', f)));
+    });
+  });
+
+  it(`Caching with cacheFiles({glob: 'src/test-*.js', base1: 'src',` +
+    `base2: 'build/src'})`, function () {
+    return cacheFiles({glob: 'src/test-*.js', base1: 'src',
+      base2: 'build/src',
+      debug: this.debug}).then(() => // eslint-disable-line no-invalid-this
+      getCachedFiles({glob: 'src/test-*.js', base1: 'src',
+        base2: 'build/src',
+        // eslint-disable-next-line no-invalid-this
+        debug: this.debug})).then(files => {
+      expect(files.map(file => file.filepath)).to.eql(
+        ['test-gulp-process.js', 'test-tools.js'].map(
+          f => path.join(process.cwd(), 'build/src', f)));
+    });
+  });
+
+  it(`Caching with cacheFiles({glob: ['src/test-*.js', ` +
+    `'!src/test-tools.js'], base1: 'build'})`, function () {
+    return cacheFiles({glob: ['src/test-*.js', '!src/test-tools.js'],
+      base1: 'build',
+      debug: this.debug}) // eslint-disable-line no-invalid-this
       .then(() =>
-        getCachedFiles(['src/test-*.js', '!src/test-tools.js'], 'build'))
+        getCachedFiles({glob: ['src/test-*.js', '!src/test-tools.js'],
+          base1: 'build',
+          debug: this.debug})) // eslint-disable-line no-invalid-this
       .then(files => {
         expect(files.map(file => file.filepath)).to.eql(
           [path.join(process.cwd(), 'build/src', 'test-gulp-process.js')]);

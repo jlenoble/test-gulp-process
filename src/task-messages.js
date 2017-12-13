@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import {getDebug} from './file';
 import {waitForMessage} from './messages-helpers';
 import {ParallelMessages} from './test-tools';
 
@@ -8,7 +7,7 @@ const genMessages = function* (messages) {
 };
 
 export default class TaskMessages {
-  constructor (msgs) {
+  constructor (msgs, options) {
     // Clone msgs to not share it across instances
     const messages = msgs.concat();
 
@@ -23,6 +22,10 @@ export default class TaskMessages {
 
       globalFns: {
         value: [],
+      },
+
+      debug: {
+        value: !!(options && options.debug),
       },
     });
   }
@@ -59,7 +62,7 @@ export default class TaskMessages {
       return this.next(results);
     }
 
-    if (!message.done && getDebug()) {
+    if (!message.done && this.debug) {
       console.info(`${chalk.cyan('Waiting for')} message '${
         chalk.green(this.message)}'`);
     }
@@ -75,7 +78,7 @@ export default class TaskMessages {
     // in parallel.
     let searchedMessage = this.currentParallelMessages[0];
 
-    if (getDebug()) {
+    if (this.debug) {
       console.info(`${chalk.cyan('Waiting for')} parallel message '${
         chalk.green(searchedMessage)}'`);
     }
@@ -106,7 +109,7 @@ export default class TaskMessages {
     this.message = this.currentParallelMessages[pos];
     this.currentParallelMessages.splice(pos, 1);
 
-    if (getDebug()) {
+    if (this.debug) {
       if (this.message !== searchedMessage) {
         console.info(`${chalk.cyan('But')} parallel message '${
           chalk.green(this.message)}' was found ${chalk.cyan('first')}`);

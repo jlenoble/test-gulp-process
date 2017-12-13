@@ -11,7 +11,10 @@ export default function testGulpProcess (opts) {
     this.timeout(opts.timeout // eslint-disable-line no-invalid-this
       || 20000);
 
-    const messages = new Messages(opts.messages, opts);
+    const silent = !(opts.fullDebug || testGulpProcess.fullDebug);
+    const debug = opts.debug || opts.fullDebug || testGulpProcess.debug ||
+      testGulpProcess.fullDebug;
+    const messages = new Messages(opts.messages, {debug});
     const dest = newDest();
 
     let tasks = opts.task || ['default'];
@@ -44,7 +47,7 @@ export default function testGulpProcess (opts) {
             {detached: true} // Make sure all test processes will be killed
           );
 
-          return childProcessData(this.childProcess);
+          return childProcessData(this.childProcess, {silent});
         },
 
         async checkResults (results) {
@@ -74,7 +77,7 @@ export default function testGulpProcess (opts) {
         onSetupError: onError,
         onSpawnError: onError,
         onCheckResultsError: onError,
-      }, opts, {dest, task});
+      }, opts, {dest, task, debug});
 
       return makeSingleTest(options);
     });
@@ -84,6 +87,14 @@ export default function testGulpProcess (opts) {
     }, Promise.resolve());
   };
 }
+
+testGulpProcess.setDebug = function (debug) {
+  testGulpProcess.debug = debug;
+};
+
+testGulpProcess.setFullDebug = function (debug) {
+  testGulpProcess.fullDebug = debug;
+};
 
 export {
   compareTranspiled,

@@ -1,4 +1,4 @@
-import {cacheFiles, getCachedFiles, purgeCache} from '../src/file';
+import {cacheFiles, getCachedFiles, purgeCache} from '../src/helpers';
 import path from 'path';
 import {expect} from 'chai';
 

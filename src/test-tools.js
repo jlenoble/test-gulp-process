@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
 import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
-import {cacheFiles, getCachedFiles} from './file';
+import {cacheFiles, getCachedFiles} from './helpers';
 import {ParallelMessages} from './classes';
 
 export const compareTranspiled = (_glob, _dest) => options => {

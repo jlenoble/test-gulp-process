@@ -6,12 +6,12 @@ import rename from 'gulp-rename';
 
 let counter = 0;
 
-const newDest = () => {
+export const newDest = () => {
   counter++;
   return `/tmp/${(new Date()).getTime()}_${counter}`;
 };
 
-const copySources = options => {
+export const copySources = options => {
   return new Promise((resolve, reject) => {
     gulp.src(options.sources, {base: process.cwd()})
       .on('end', resolve)
@@ -20,7 +20,7 @@ const copySources = options => {
   });
 };
 
-const copyGulpfile = options => {
+export const copyGulpfile = options => {
   return new Promise((resolve, reject) => {
     gulp.src(options.gulpfile, {base: 'test/gulpfiles'})
       .on('end', resolve)
@@ -30,7 +30,7 @@ const copyGulpfile = options => {
   });
 };
 
-const copyBabelrc = options => {
+export const copyBabelrc = options => {
   return new Promise((resolve, reject) => {
     gulp.src('.babelrc')
       .on('end', resolve)
@@ -39,9 +39,7 @@ const copyBabelrc = options => {
   });
 };
 
-const linkNodeModules = options => {
+export const linkNodeModules = options => {
   return childProcessData(spawn('ln', [
     '-s', path.join(process.cwd(), 'node_modules'), options.dest]));
 };
-
-export {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules};

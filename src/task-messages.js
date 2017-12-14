@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import {waitForMessage} from './messages-helpers';
+import {waitForMessage} from './helpers';
 import {ParallelMessages} from './test-tools';
 
 const genMessages = function* (messages) {

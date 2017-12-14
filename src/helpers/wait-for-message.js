@@ -34,7 +34,7 @@ const testMessage = (results, message) => {
     el => el.match(new RegExp(message))) !== -1;
 };
 
-function waitForMessage (results, message) {
+export function waitForMessage (results, message) {
   const msg = message.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
   return repeat(() => testMessage(results, msg)).catch(err => {
     if (err.message.match(/Waiting too long for child process to finish/)) {
@@ -44,5 +44,3 @@ Message '${message}' was never intercepted`);
     throw err;
   });
 }
-
-export {waitForMessage};

@@ -1,7 +1,7 @@
 import del from 'del';
 import path from 'path';
 
-const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
+export const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
   if (childProcess && childProcess.exitCode === null) {
     process.kill(-childProcess.pid); // Kill test process if still alive
   }
@@ -15,7 +15,7 @@ const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
   return Promise.resolve();
 };
 
-function onError (err) {
+export function onError (err) {
   return this.tearDownTest() // eslint-disable-line no-invalid-this
     .then(() => Promise.reject(err), e => {
       console.error('Test originally failed with error:', err);
@@ -23,5 +23,3 @@ function onError (err) {
       return Promise.reject(e);
     });
 }
-
-export {cleanUp, onError};

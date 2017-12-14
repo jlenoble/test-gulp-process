@@ -1,9 +1,8 @@
 import childProcessData, {makeSingleTest} from 'child-process-data';
 import {spawn} from 'child_process';
 import path from 'path';
-import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules}
-  from './setup-helpers';
-import {cleanUp, onError} from './cleanup-helpers';
+import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules,
+  cleanUp, onError} from './helpers';
 import Messages from './messages';
 
 export default function testGulpProcess (opts) {

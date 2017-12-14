@@ -1,5 +1,5 @@
 import TaskMessages from './task-messages';
-import {runNextTask} from './test-tools';
+import {runNextTask} from '../test-tools';
 
 const splitMessages = (messages, options) => {
   const msgs = [];

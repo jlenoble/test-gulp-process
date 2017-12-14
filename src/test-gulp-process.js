@@ -3,7 +3,7 @@ import {spawn} from 'child_process';
 import path from 'path';
 import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules,
   cleanUp, onError} from './helpers';
-import Messages from './messages';
+import {Messages} from './classes';
 
 export default function testGulpProcess (opts) {
   return function () {

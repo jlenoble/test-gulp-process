@@ -8,6 +8,7 @@ import babel from 'gulp-babel';
 import {chDir} from 'cleanup-wrapper';
 import {expectEventuallyDeleted, expectEventuallyFound} from 'stat-again';
 import {cacheFiles, getCachedFiles} from './file';
+import {ParallelMessages} from './classes';
 
 export const compareTranspiled = (_glob, _dest) => options => {
   const dest = path.join(options.dest, _dest);
@@ -84,44 +85,6 @@ export const runNextTask = options => {
 };
 export const nextTask = () => runNextTask;
 
-export class ParallelMessages {
-  constructor (queues) {
-    this.queues = queues.map(queue => queue.concat());
-    this.messages = this.queues.map(queue => queue.shift());
-    this.notStarted = true;
-  }
-
-  next (foundMessage) {
-    let nextMessages;
-
-    if (this.notStarted) {
-      this.notStarted = false;
-      nextMessages = this.messages;
-    } else {
-      const index = this.messages.findIndex(msg => msg === foundMessage);
-      const queue = this.queues[index];
-      if (queue.length) {
-        this.messages[index] = queue.shift();
-        nextMessages = [this.messages[index]];
-      } else {
-        this.messages.splice(index, 1);
-        this.queues.splice(index, 1);
-        nextMessages = [];
-      }
-    }
-
-    if (this.debug) {
-      console.info(`Current ${chalk.cyan('parallel')} messages '${
-        chalk.green(JSON.stringify(this.messages))}'`);
-    }
-
-    return nextMessages;
-  }
-
-  setDebug (debug) {
-    this.debug = debug;
-  }
-}
 export const parallel = (...queues) => new ParallelMessages(queues);
 
 export const snapshot = glob => options => {

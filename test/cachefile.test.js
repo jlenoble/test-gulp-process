@@ -23,7 +23,7 @@ describe('Testing cache helpers', function () {
           // eslint-disable-next-line no-invalid-this
           debug: this.debug})).then(files => {
         expect(files.map(file => file.filepath)).to.eql(
-          ['test-gulp-process.js', 'test-tools.js'].map(
+          ['test-gulp-process.js'].map(
             f => path.join(process.cwd(), 'build/src', f)));
       });
     });
@@ -35,7 +35,7 @@ describe('Testing cache helpers', function () {
         // eslint-disable-next-line no-invalid-this
         debug: this.debug})).then(files => {
       expect(files.map(file => file.filepath)).to.eql(
-        ['test-gulp-process.js', 'test-tools.js'].map(
+        ['test-gulp-process.js'].map(
           f => path.join(process.cwd(), 'build/src', f)));
     });
   });
@@ -50,23 +50,22 @@ describe('Testing cache helpers', function () {
         // eslint-disable-next-line no-invalid-this
         debug: this.debug})).then(files => {
       expect(files.map(file => file.filepath)).to.eql(
-        ['test-gulp-process.js', 'test-tools.js'].map(
+        ['test-gulp-process.js'].map(
           f => path.join(process.cwd(), 'build/src', f)));
     });
   });
 
   it(`Caching with cacheFiles({glob: ['src/test-*.js', ` +
-    `'!src/test-tools.js'], base1: 'build'})`, function () {
-    return cacheFiles({glob: ['src/test-*.js', '!src/test-tools.js'],
+    `'!src/test-gulp-process.js'], base1: 'build'})`, function () {
+    return cacheFiles({glob: ['src/test-*.js', '!src/test-gulp-process.js'],
       base1: 'build',
       debug: this.debug}) // eslint-disable-line no-invalid-this
       .then(() =>
-        getCachedFiles({glob: ['src/test-*.js', '!src/test-tools.js'],
+        getCachedFiles({glob: ['src/test-*.js', '!src/test-gulp-process.js'],
           base1: 'build',
           debug: this.debug})) // eslint-disable-line no-invalid-this
       .then(files => {
-        expect(files.map(file => file.filepath)).to.eql(
-          [path.join(process.cwd(), 'build/src', 'test-gulp-process.js')]);
+        expect(files.map(file => file.filepath)).to.eql([]);
       });
   });
 });

@@ -11,8 +11,8 @@ gulp.task('exec:transpile:all', () => {
 });
 
 gulp.task('watch:transpile:all', done => {
-  gulp.watch(glob, gulp.series('exec:transpile:all'));
-  done();
+  gulp.watch(glob, gulp.series('exec:transpile:all'))
+    .on('ready', done);
 });
 
 gulp.task('tdd:transpile:all', gulp.series('exec:transpile:all',

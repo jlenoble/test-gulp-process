@@ -1,5 +1,6 @@
 export {compareTranspiled} from './compared-transpiled';
 export {deleteFile} from './delete-file';
+export {hasSourcemaps} from './has-sourcemaps';
 export {isDeleted} from './is-deleted';
 export {isFound} from './is-found';
 export {isNewer, isUntouched, isSameContent, isChangedContent}

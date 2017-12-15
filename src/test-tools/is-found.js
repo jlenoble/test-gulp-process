@@ -14,7 +14,7 @@ export const isFound = _file => options => {
           chalk.green(str)} can be found`);
       }
 
-      throw new Error(`${str} resolves to nothing`);
+      return Promise.reject(new Error(`${str} resolves to nothing`));
     }
 
     return Promise.all(

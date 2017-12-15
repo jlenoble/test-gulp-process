@@ -150,6 +150,7 @@ describe('Testing gulpfile', function () {
   }));
 });
 ```
+
 ### `touchFile` helper function
 
 Considering the gulpfile:
@@ -358,8 +359,10 @@ See [`snapshot` helper function](#snapshot-helper-function) example.
 
 See [`snapshot` helper function](#snapshot-helper-function) example.
 
+
 ## License
 
 test-gulp-process is [MIT licensed](./LICENSE).
 
 © 2017 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+

@@ -80,8 +80,7 @@ export default class TaskMessages {
     let searchedMessage = this.currentParallelMessages[0];
 
     if (this.debug) {
-      console.info(`${chalk.cyan('Waiting for')} ${
-        this.currentParallelMessages.length ? 'parallel ': ''}message '${
+      console.info(`${chalk.cyan('Waiting for')} message '${
         chalk.green(searchedMessage)}'`);
     }
 

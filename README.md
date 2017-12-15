@@ -9,13 +9,14 @@ Helpers to test Gulp processes
   * [Helper callbacks](#helper-callbacks)
     * [`nextTask` helper function](#nexttask-helper-function)
     * [`compareTranspiled` helper function](#comparetranspiled-helper-function)
-    * [`touchFile` helper function](#touchfile-helper-function)
     * [`deleteFile`, `isDeleted` and `isFound` helper functions](#deletefile-isdeleted-and-isfound-helper-functions)
+    * [`has-sourcemap` helper function](#has-sourcemap-helper-function)
+    * [`isNewer` and `isUntouched` helper functions](#isnewer-and-isuntouched-helper-functions)
+    * [`isSameContent` and `isChangedContent` helper functions](#issamecontent-and-ischangedcontent-helper-functions)
     * [`never` helper function](#never-helper-function)
     * [`parallel` helper function](#parallel-helper-function)
     * [`snapshot` helper function](#snapshot-helper-function)
-    * [`isNewer` and `isUntouched` helper functions](#isnewer-and-isuntouched-helper-functions)
-    * [`isSameContent` and `isChangedContent` helper functions](#issamecontent-and-ischangedcontent-helper-functions)
+    * [`touchFile` helper function](#touchfile-helper-function)
   * [License](#license)
 
 
@@ -151,60 +152,6 @@ describe('Testing gulpfile', function () {
 });
 ```
 
-### `touchFile` helper function
-
-Considering the gulpfile:
-
-```js
-import gulp from 'gulp';
-import babel from 'gulp-babel';
-
-const glob = 'src/**/*.js';
-const dest = 'build';
-
-gulp.task('exec:transpile:all', () => {
-  return gulp.src(glob, {base: process.cwd()})
-    .pipe(babel())
-    .pipe(gulp.dest(dest));
-});
-
-gulp.task('watch:transpile:all', done => {
-  gulp.watch(glob, gulp.series('exec:transpile:all'));
-  done();
-});
-
-gulp.task('tdd:transpile:all', gulp.series('exec:transpile:all',
-  'watch:transpile:all'));
-
-gulp.task('default', gulp.series('tdd:transpile:all'));
-```
-
-We can test if files are correctly watched with helper function `touchFile`:
-
-```js
-import testGulpProcess, {touchFile} from 'test-gulp-process';
-
-describe('Testing Gulpfile', function () {
-  it(`Testing a tdd transpile task`, testGulpProcess({
-    sources: ['src/**/*.js', 'test/**/*.js'],
-    gulpfile: 'test/gulpfiles/gulpfile.js',
-
-    messages: [
-      `Starting 'default'...`,
-      `Starting 'tdd:transpile:all'...`,
-      `Starting 'exec:transpile:all'...`,
-      `Finished 'exec:transpile:all' after`,
-      `Starting 'watch:transpile:all'...`,
-      `Finished 'watch:transpile:all' after`,
-      `Finished 'tdd:transpile:all' after`,
-      [`Finished 'default' after`, touchFile('src/some-file.js')],
-      `Starting 'exec:transpile:all'...`,
-      `Finished 'exec:transpile:all' after`,
-    ],
-  }));
-});
-```
-
 ### `deleteFile`, `isDeleted` and `isFound` helper functions
 
 Using the gulpfile from [`touchFile` helper function](#touchfile-helper-function), we can use `deleteFile` to delete a file after a succession of events.
@@ -234,6 +181,49 @@ describe('Testing Gulpfile', function () {
   }));
 });
 ```
+
+### `has-sourcemap` helper function
+
+`has-sourcemap(glob, dest)` whether provided glob has its sourcemap converted files in the `dest` directory.
+
+In the following example, `src/**/*.js` were transpiled, appended with associated source maps and written to `build`. We check that the original glob can be restored identically from the files found in `build`.
+
+```js
+import testGulpProcess, {hasSourcemap, isFound} from 'test-gulp-process';
+
+describe('Testing Gulpfile', function () {
+  it(`Testing a transpile task with sourcemaps`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-sourcemaps.js',
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'exec'...`,
+      [`Finished 'exec' after`,
+        isFound('src/test-gulp-process.js'),
+        isFound('build/src/test-gulp-process.js'),
+        hasSourcemap('src/**/*.js', 'build')],
+      `Finished 'default' after`,
+    ],
+  }));
+});
+```
+
+### `isNewer` and `isUntouched` helper functions
+
+`isNewer(glob)` will throw if at least one of glob files have not been touched since last `snapshot`.
+
+`isUntouched(glob)` will throw if at least one of glob files have been touched since last `snapshot`.
+
+See [`snapshot` helper function](#snapshot-helper-function) example.
+
+### `isSameContent` and `isChangedContent` helper functions
+
+`isSameContent(glob)` will throw if the content of at least one of glob files have been changed since last `snapshot`.
+
+`isChangedContent(glob)` will throw if the content of at least one of glob files have not been changed since last `snapshot`.
+
+See [`snapshot` helper function](#snapshot-helper-function) example.
 
 ### `never` helper function
 
@@ -343,21 +333,59 @@ describe('Testing snapshots', function () {
 });
 ```
 
-### `isNewer` and `isUntouched` helper functions
+### `touchFile` helper function
 
-`isNewer(glob)` will throw if at least one of glob files have not been touched since last `snapshot`.
+Considering the gulpfile:
 
-`isUntouched(glob)` will throw if at least one of glob files have been touched since last `snapshot`.
+```js
+import gulp from 'gulp';
+import babel from 'gulp-babel';
 
-See [`snapshot` helper function](#snapshot-helper-function) example.
+const glob = 'src/**/*.js';
+const dest = 'build';
 
-### `isSameContent` and `isChangedContent` helper functions
+gulp.task('exec:transpile:all', () => {
+  return gulp.src(glob, {base: process.cwd()})
+    .pipe(babel())
+    .pipe(gulp.dest(dest));
+});
 
-`isSameContent(glob)` will throw if the content of at least one of glob files have been changed since last `snapshot`.
+gulp.task('watch:transpile:all', done => {
+  gulp.watch(glob, gulp.series('exec:transpile:all'));
+  done();
+});
 
-`isChangedContent(glob)` will throw if the content of at least one of glob files have not been changed since last `snapshot`.
+gulp.task('tdd:transpile:all', gulp.series('exec:transpile:all',
+  'watch:transpile:all'));
 
-See [`snapshot` helper function](#snapshot-helper-function) example.
+gulp.task('default', gulp.series('tdd:transpile:all'));
+```
+
+We can test if files are correctly watched with helper function `touchFile`:
+
+```js
+import testGulpProcess, {touchFile} from 'test-gulp-process';
+
+describe('Testing Gulpfile', function () {
+  it(`Testing a tdd transpile task`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js'],
+    gulpfile: 'test/gulpfiles/gulpfile.js',
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'tdd:transpile:all'...`,
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+      `Starting 'watch:transpile:all'...`,
+      `Finished 'watch:transpile:all' after`,
+      `Finished 'tdd:transpile:all' after`,
+      [`Finished 'default' after`, touchFile('src/some-file.js')],
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+    ],
+  }));
+});
+```
 
 
 ## License

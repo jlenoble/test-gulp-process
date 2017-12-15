@@ -11,11 +11,11 @@ export const deleteFile = _file => options => {
       const str = JSON.stringify(destGlob);
 
       if (options && options.debug) {
-        console.info(`Nothing to ${chalk.cyan('delete')}`);
-        console.info(`${chalk.green(str)} resolves to nothing`);
+        console.info(`${chalk.green(str)} cannot be ${chalk.cyan('deleted')}:`);
       }
 
-      return Promise.resolve();
+      return Promise.reject(new Error(`${
+        chalk.green(str)} resolves to nothing`));
     }
 
     const exec = () => {

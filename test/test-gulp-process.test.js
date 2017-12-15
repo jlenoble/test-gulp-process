@@ -18,21 +18,6 @@ describe('Testing Gulpfile', function () {
     ],
   }));
 
-  it(`Testing a transpile task - isFound(glob)`, testGulpProcess({
-    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
-    gulpfile: 'test/gulpfiles/exec-transpile-all.js',
-    debug: true,
-
-    messages: [
-      `Starting 'default'...`,
-      `Starting 'exec:transpile:all'...`,
-      [`Finished 'exec:transpile:all' after`,
-        isFound('src/test-tools/*.js'),
-        isFound('build/src/test-tools/*.js')],
-      `Finished 'default' after`,
-    ],
-  }));
-
   it(`Testing a tdd transpile task - touching`, testGulpProcess({
     sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
     gulpfile: 'test/gulpfiles/tdd-transpile-all.js',

@@ -1,16 +1,33 @@
 import chalk from 'chalk';
-import {rebaseGlob} from 'polypath';
+import {rebaseGlob, resolveGlob} from 'polypath';
 import del from 'del';
 import {chDir} from 'cleanup-wrapper';
 
 export const deleteFile = _file => options => {
-  const exec = () => {
-    const [file] = rebaseGlob(_file, options.dest);
-    if (options && options.debug) {
-      console.info(`${chalk.cyan('Deleting')} ${chalk.green(file)}`);
-    }
-    return del(file);
-  };
+  const destGlob = rebaseGlob(_file, options.dest);
 
-  return chDir(options.dest, exec)();
+  return resolveGlob(destGlob).then(files => {
+    if (!files.length) {
+      const str = JSON.stringify(destGlob);
+
+      if (options && options.debug) {
+        console.info(`Nothing to ${chalk.cyan('delete')}`);
+        console.info(`${chalk.green(str)} resolves to nothing`);
+      }
+
+      return Promise.resolve();
+    }
+
+    const exec = () => {
+      return Promise.all(
+        files.map(file => {
+          if (options && options.debug) {
+            console.info(`${chalk.cyan('Deleting')} ${chalk.green(file)}`);
+          }
+          return del(file);
+        }));
+    };
+
+    return chDir(options.dest, exec)();
+  });
 };

@@ -98,7 +98,7 @@ testGulpProcess.setFullDebug = function (debug) {
 export {
   compareTranspiled,
   deleteFile,
-  hasSourcemaps,
+  hasSourcemap,
   isChangedContent,
   isDeleted,
   isFound,

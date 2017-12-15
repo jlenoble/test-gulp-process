@@ -1,4 +1,4 @@
-import testGulpProcess, {hasSourcemaps, isFound}
+import testGulpProcess, {hasSourcemap, isFound}
   from '../src/test-gulp-process';
 
 describe('Testing Gulpfile', function () {
@@ -13,7 +13,7 @@ describe('Testing Gulpfile', function () {
       [`Finished 'exec' after`,
         isFound('src/test-gulp-process.js'),
         isFound('build/src/test-gulp-process.js'),
-        hasSourcemaps('src/**/*.js', 'build')],
+        hasSourcemap('src/**/*.js', 'build')],
       `Finished 'default' after`,
     ],
   }));

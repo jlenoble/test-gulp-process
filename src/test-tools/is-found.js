@@ -7,7 +7,14 @@ export const isFound = _file => options => {
 
   return resolveGlob(destGlob).then(files => {
     if (!files.length) {
-      throw new Error(`${JSON.stringify(destGlob)} resolves to nothing`);
+      const str = JSON.stringify(destGlob);
+
+      if (options && options.debug) {
+        console.info(`${chalk.cyan('Checking')} whether ${
+          chalk.green(str)} can be found`);
+      }
+
+      throw new Error(`${str} resolves to nothing`);
     }
 
     return Promise.all(
@@ -16,6 +23,7 @@ export const isFound = _file => options => {
           console.info(`${chalk.cyan('Checking')} whether ${
             chalk.green(file)} can be found`);
         }
+
         return expectEventuallyFound(file);
       }));
   });

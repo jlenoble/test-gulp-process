@@ -35,4 +35,23 @@ describe('Testing Gulpfile', function () {
       expect(err.message).to.match(/resolves to nothing/);
     },
   }));
+
+  it(`Testing isFound(badfile)`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/exec-transpile-all.js',
+    debug: true,
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'exec:transpile:all'...`,
+      [`Finished 'exec:transpile:all' after`,
+        isFound('src/test-tools/is-found.js'),
+        isFound('build/src/test-tools/isfnd.js')],
+      `Finished 'default' after`,
+    ],
+
+    onCheckResultsError (err) {
+      expect(err.message).to.match(/resolves to nothing/);
+    },
+  }));
 });

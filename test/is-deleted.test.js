@@ -97,4 +97,27 @@ describe('Testing Gulpfile', function () {
         isDeleted('badbuild/src/test-tools/*.js')],
     ],
   }));
+
+  it(`Testing isDeleted(badFile)`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+    debug: true,
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'tdd:transpile:all'...`,
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+      `Starting 'watch:transpile:all'...`,
+      `Finished 'watch:transpile:all' after`,
+      `Finished 'tdd:transpile:all' after`,
+      [`Finished 'default' after`,
+        deleteFile('src/test-tools/*.js'),
+        deleteFile('build/src/test-tools/is-deleted.js')],
+      `Starting 'exec:transpile:all'...`,
+      [`Finished 'exec:transpile:all' after`,
+        isDeleted('src/test-tools/*.js'),
+        isDeleted('build/src/test-tools/badfile.js')],
+    ],
+  }));
 });

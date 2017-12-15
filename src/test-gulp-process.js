@@ -2,7 +2,7 @@ import childProcessData, {makeSingleTest} from 'child-process-data';
 import {spawn} from 'child_process';
 import path from 'path';
 import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules,
-  cleanUp, onError} from './helpers';
+  cleanUp, onError, wrapCallbacks} from './helpers';
 import {Messages} from './classes';
 
 export default function testGulpProcess (opts) {
@@ -78,7 +78,7 @@ export default function testGulpProcess (opts) {
         onCheckResultsError: onError,
       }, opts, {dest, task, debug});
 
-      return makeSingleTest(options);
+      return makeSingleTest(wrapCallbacks(options));
     });
 
     return tests.reduce((promise, test) => {

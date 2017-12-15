@@ -44,9 +44,30 @@ describe('Testing Gulpfile', function () {
         deleteFile('src/test-tools/*.js'),
         deleteFile('badbuild/src/test-tools/*.js')],
       `Starting 'exec:transpile:all'...`,
-      [`Finished 'exec:transpile:all' after`,
-        isDeleted('src/test-tools/*.js'),
-        isDeleted('build/src/test-tools/*.js')],
+    ],
+
+    onCheckResultsError (err) {
+      expect(err.message).to.match(/resolves to nothing/);
+    },
+  }));
+
+  it(`Testing deleteFile(badFile)`, testGulpProcess({
+    sources: ['src/**/*.js', 'test/**/*.js', 'gulp/**/*.js'],
+    gulpfile: 'test/gulpfiles/tdd-transpile-all.js',
+    debug: true,
+
+    messages: [
+      `Starting 'default'...`,
+      `Starting 'tdd:transpile:all'...`,
+      `Starting 'exec:transpile:all'...`,
+      `Finished 'exec:transpile:all' after`,
+      `Starting 'watch:transpile:all'...`,
+      `Finished 'watch:transpile:all' after`,
+      `Finished 'tdd:transpile:all' after`,
+      [`Finished 'default' after`,
+        deleteFile('src/test-tools/*.js'),
+        deleteFile('build/src/test-tools/badfile.js')],
+      `Starting 'exec:transpile:all'...`,
     ],
 
     onCheckResultsError (err) {

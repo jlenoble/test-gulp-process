@@ -8,7 +8,7 @@ let counter = 0;
 
 export const newDest = () => {
   counter++;
-  return `/tmp/${path.basename(process.cwd())}_${(new Date()).getTime()}_${
+  return `/tmp/${path.basename(process.cwd())}_${Date.now()}_${
     counter}`;
 };
 

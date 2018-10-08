@@ -8,7 +8,8 @@ let counter = 0;
 
 export const newDest = () => {
   counter++;
-  return `/tmp/${(new Date()).getTime()}_${counter}`;
+  return `/tmp/${path.basename(process.cwd())}_${(new Date()).getTime()}_${
+    counter}`;
 };
 
 export const copySources = options => {

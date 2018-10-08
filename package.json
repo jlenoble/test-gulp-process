@@ -1,7 +1,7 @@
 {
   "name": "test-gulp-process",
   "description": "Helpers to test Gulp processes",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "keywords": [],
   "author": {
     "name": "Jason Lenoble",

@@ -2,6 +2,8 @@ import childProcessData from 'child-process-data';
 import {spawn} from 'child_process';
 import path from 'path';
 import gulp from 'gulp';
+import babel from 'gulp-babel';
+import noop from 'gulp-noop';
 import rename from 'gulp-rename';
 
 let counter = 0;
@@ -15,6 +17,7 @@ export const newDest = () => {
 export const copySources = options => {
   return new Promise((resolve, reject) => {
     gulp.src(options.sources, {base: process.cwd()})
+      .pipe(options.transpileSources ? babel() : noop())
       .on('end', resolve)
       .on('error', reject)
       .pipe(gulp.dest(options.dest));
@@ -24,6 +27,7 @@ export const copySources = options => {
 export const copyGulpfile = options => {
   return new Promise((resolve, reject) => {
     gulp.src(options.gulpfile, {base: 'test/gulpfiles'})
+      .pipe(options.transpileGulp ? babel() : noop())
       .on('end', resolve)
       .on('error', reject)
       .pipe(rename('gulpfile.babel.js'))

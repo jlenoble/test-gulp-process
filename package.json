@@ -37,7 +37,7 @@
     "@types/gulp-babel": "^6.1.29",
     "@types/gulp-rename": "^0.0.33",
     "chalk": "^2.4.2",
-    "child-process-data": "^0.7.0",
+    "child-process-data": "link:../child-process-data",
     "cleanup-wrapper": "^0.3.0",
     "del": "^5.0.0",
     "equal-file-contents": "^0.1.7",
@@ -74,6 +74,7 @@
     "@types/source-map-support": "^0.5.0",
     "@typescript-eslint/eslint-plugin": "^1.12.0",
     "@typescript-eslint/parser": "^1.12.0",
+    "@typescript-eslint/typescript-estree": "^1.12.0",
     "autoreload-gulp": "^0.4.1",
     "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
@@ -99,7 +100,5 @@
     "prettier": "^1.18.2",
     "source-map-support": "^0.5.12",
     "typescript": "^3.5.3"
-  },
-  "peerDependencies": {},
-  "optionalDependencies": {}
+  }
 }

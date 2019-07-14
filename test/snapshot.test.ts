@@ -10,7 +10,7 @@ describe("Testing snapshots", () => {
   it(
     `Taking a snapshot and recovering`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -24,7 +24,7 @@ describe("Testing snapshots", () => {
         `Finished 'tdd:transpile:all' after`,
         [
           `Finished 'default' after`,
-          snapshot("src/**/*.js"),
+          snapshot("src/**/*.ts"),
           touchFile("src/test-gulp-process.js")
         ],
         `Starting 'exec:transpile:all'...`,
@@ -32,7 +32,7 @@ describe("Testing snapshots", () => {
           `Finished 'exec:transpile:all' after`,
           isNewer("src/test-gulp-process.js"),
           isSameContent("src/test-gulp-process.js"),
-          snapshot("src/**/*.js"),
+          snapshot("src/**/*.ts"),
           isUntouched("src/test-gulp-process.js"),
           isSameContent("src/test-gulp-process.js")
         ]

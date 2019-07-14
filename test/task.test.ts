@@ -1,12 +1,13 @@
 import testGulpProcess, { never, nextTask } from "../src/test-gulp-process";
+import { ErrorWithHistory } from "child-process-data";
 import { expect } from "chai";
 import chalk from "chalk";
 
-describe("Testing Gulpfile task", () => {
+describe("Testing Gulpfile task", (): void => {
   it(
     `Task is default`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       debug: true,
 
@@ -17,7 +18,7 @@ describe("Testing Gulpfile task", () => {
   it(
     `Task is not default`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: "hello",
       debug: true,
@@ -35,7 +36,7 @@ describe("Testing Gulpfile task", () => {
   it(
     `Series of tasks`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
       debug: true,
@@ -63,7 +64,7 @@ describe("Testing Gulpfile task", () => {
   it(
     `Series of tasks - no nextTask`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
       debug: true,
@@ -80,7 +81,7 @@ describe("Testing Gulpfile task", () => {
         `Finished 'ciao' after`
       ],
 
-      onCheckResultsError: function(err) {
+      onCheckResultsError: function(err: ErrorWithHistory): void {
         try {
           expect(err).to.match(/Waiting too long for child process to finish:/);
           expect(err).to.match(
@@ -93,7 +94,7 @@ describe("Testing Gulpfile task", () => {
               )}`
             );
           }
-          return Promise.resolve(err.results);
+          Promise.resolve(err.results);
         } catch (e) {
           try {
             expect(err).to.match(
@@ -106,9 +107,9 @@ describe("Testing Gulpfile task", () => {
                 )}`
               );
             }
-            return Promise.resolve(err.results);
+            Promise.resolve(err.results);
           } catch (e) {
-            return Promise.reject(err);
+            Promise.reject(err);
           }
         }
       }

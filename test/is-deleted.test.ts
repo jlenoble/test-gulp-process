@@ -8,7 +8,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing deleteFile(glob) and isDeleted(glob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -40,7 +40,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing deleteFile(badGlob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -69,7 +69,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing deleteFile(badFile)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -98,7 +98,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing isDeleted(badGlob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -128,7 +128,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing isDeleted(badFile)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 

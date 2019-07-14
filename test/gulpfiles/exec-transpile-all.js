@@ -1,7 +1,7 @@
 import gulp from "gulp";
 import babel from "gulp-babel";
 
-const glob = "src/**/*.js";
+const glob = "src/**/*.ts";
 const dest = "build";
 
 gulp.task("exec:transpile:all", () => {

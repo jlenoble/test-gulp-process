@@ -2,7 +2,7 @@ import gulp from "gulp";
 import babel from "gulp-babel";
 import sourcemaps from "gulp-sourcemaps";
 
-const glob = "src/**/*.js";
+const glob = "src/**/*.ts";
 const dest = "build";
 
 gulp.task("exec", () => {

@@ -1,11 +1,11 @@
 import testGulpProcess, { touchFile } from "../src/test-gulp-process";
 import { expect } from "chai";
 
-describe("Testing Gulpfile", () => {
+describe("Testing Gulpfile", (): void => {
   it(
     `Testing touchFile(glob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -27,7 +27,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing touchFile(badglob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -44,7 +44,7 @@ describe("Testing Gulpfile", () => {
         `Finished 'exec:transpile:all' after`
       ],
 
-      onCheckResultsError(err) {
+      onCheckResultsError(err: Error): void {
         expect(err.message).to.match(/resolves to nothing/);
       }
     })
@@ -53,7 +53,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing touchFile(badfile)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       debug: true,
 
@@ -70,7 +70,7 @@ describe("Testing Gulpfile", () => {
         `Finished 'exec:transpile:all' after`
       ],
 
-      onCheckResultsError(err) {
+      onCheckResultsError(err: Error): void {
         expect(err.message).to.match(/resolves to nothing/);
       }
     })

@@ -5,7 +5,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing isFound(glob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-transpile-all.js",
       debug: true,
 
@@ -25,7 +25,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing isFound(badglob)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-transpile-all.js",
       debug: true,
 
@@ -49,7 +49,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing isFound(badfile)`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-transpile-all.js",
       debug: true,
 

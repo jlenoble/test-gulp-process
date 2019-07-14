@@ -5,7 +5,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing a queue of in order messages`,
     testGulpProcess({
-      sources: ["src/**/*.js"],
+      sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       debug: true,
 
@@ -20,7 +20,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing a queue of out of order messages`,
     testGulpProcess({
-      sources: ["src/**/*.js"],
+      sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       debug: true,
 
@@ -35,7 +35,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing parallel queues`,
     testGulpProcess({
-      sources: ["src/**/*.js"],
+      sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       debug: true,
 
@@ -55,7 +55,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing parallel queues - fail on bad order`,
     testGulpProcess({
-      sources: ["src/**/*.js"],
+      sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       debug: true,
 
@@ -82,7 +82,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing parallel queues - special characters`,
     testGulpProcess({
-      sources: ["src/**/*.js"],
+      sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue-bugfix1.js",
       debug: true,
 

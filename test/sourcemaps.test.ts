@@ -7,7 +7,7 @@ describe("Testing Gulpfile", () => {
   it(
     `Testing a transpile task with sourcemaps`,
     testGulpProcess({
-      sources: ["src/**/*.js", "test/**/*.js", "gulp/**/*.js"],
+      sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-sourcemaps.js",
       debug: true,
 
@@ -18,7 +18,7 @@ describe("Testing Gulpfile", () => {
           `Finished 'exec' after`,
           isFound("src/test-gulp-process.js"),
           isFound("build/src/test-gulp-process.js"),
-          hasSourcemap("src/**/*.js", "build")
+          hasSourcemap("src/**/*.ts", "build")
         ],
         `Finished 'default' after`
       ]

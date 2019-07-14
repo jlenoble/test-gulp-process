@@ -14,6 +14,14 @@ export interface SetupOptions {
   transpileGulp?: boolean;
 }
 
+export interface NormalizedSetupOptions {
+  sources: string | string[];
+  gulpfile: string;
+  dest: string;
+  transpileSources: boolean;
+  transpileGulp: boolean;
+}
+
 let counter = 0;
 
 export const newDest = (): string => {
@@ -21,7 +29,7 @@ export const newDest = (): string => {
   return `/tmp/${path.basename(process.cwd())}_${Date.now()}_${counter}`;
 };
 
-export const copySources = (options: SetupOptions): Promise<void> => {
+export const copySources = (options: NormalizedSetupOptions): Promise<void> => {
   return new Promise((resolve, reject): void => {
     gulp
       .src(options.sources, { base: process.cwd() })
@@ -32,7 +40,9 @@ export const copySources = (options: SetupOptions): Promise<void> => {
   });
 };
 
-export const copyGulpfile = (options: SetupOptions): Promise<void> => {
+export const copyGulpfile = (
+  options: NormalizedSetupOptions
+): Promise<void> => {
   return new Promise((resolve, reject): void => {
     gulp
       .src(options.gulpfile, { base: "test/gulpfiles" })
@@ -44,7 +54,7 @@ export const copyGulpfile = (options: SetupOptions): Promise<void> => {
   });
 };
 
-export const copyBabelrc = (options: SetupOptions): Promise<void> => {
+export const copyBabelrc = (options: NormalizedSetupOptions): Promise<void> => {
   return new Promise((resolve, reject): void => {
     gulp
       .src(".babelrc")
@@ -54,7 +64,9 @@ export const copyBabelrc = (options: SetupOptions): Promise<void> => {
   });
 };
 
-export const linkNodeModules = async (options: SetupOptions): Promise<void> => {
+export const linkNodeModules = async (
+  options: NormalizedSetupOptions
+): Promise<void> => {
   await childProcessData(
     spawn("ln", ["-s", path.join(process.cwd(), "node_modules"), options.dest])
   );

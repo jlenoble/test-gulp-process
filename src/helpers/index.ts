@@ -8,5 +8,6 @@ export {
   copyGulpfile,
   copyBabelrc,
   linkNodeModules,
-  SetupOptions
+  SetupOptions,
+  NormalizedSetupOptions
 } from "./setup";

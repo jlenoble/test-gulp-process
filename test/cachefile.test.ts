@@ -15,98 +15,91 @@ describe("Testing cache helpers", (): void => {
     purgeCache();
   });
 
-  it(`Caching with cacheFiles({glob: 'src/test-*.js', base1: 'build'})`, function(): void {
-    return cacheFiles({
+  it(`Caching with cacheFiles({glob: 'src/test-*.js', base1: 'build'})`, async function(): Promise<
+    void
+  > {
+    await cacheFiles({
       glob: "src/test-*.js",
       base1: "build",
-      debug: this.debug
-    })
-      .then((): void =>
-        // eslint-disable-line no-invalid-this
-        getCachedFiles({
-          glob: "src/test-*.js",
-          base1: "build",
-          // eslint-disable-next-line no-invalid-this
-          debug: this.debug
-        })
+      debug: this.debug // eslint-disable-line no-invalid-this
+    });
+
+    const files = await getCachedFiles({
+      glob: "src/test-*.js",
+      base1: "build",
+      debug: this.debug // eslint-disable-line no-invalid-this
+    });
+
+    expect(files.map((file): string => file.filepath)).to.eql(
+      ["test-gulp-process.js"].map((f): string =>
+        path.join(process.cwd(), "build/src", f)
       )
-      .then((files): void => {
-        expect(files.map(file => file.filepath)).to.eql(
-          ["test-gulp-process.js"].map(f =>
-            path.join(process.cwd(), "build/src", f)
-          )
-        );
-      });
+    );
   });
 
-  it(`Caching with cacheFiles({glob: 'build/src/test-*.js'})`, function() {
-    return cacheFiles({ glob: "build/src/test-*.js", debug: this.debug })
-      .then(() =>
-        // eslint-disable-line no-invalid-this
-        getCachedFiles({
-          glob: "build/src/test-*.js",
-          // eslint-disable-next-line no-invalid-this
-          debug: this.debug
-        })
+  it(`Caching with cacheFiles({glob: 'build/src/test-*.js'})`, async function(): Promise<
+    void
+  > {
+    await cacheFiles({
+      glob: "build/src/test-*.js",
+      debug: this.debug // eslint-disable-line no-invalid-this
+    });
+
+    const files = await getCachedFiles({
+      glob: "build/src/test-*.js",
+      debug: this.debug // eslint-disable-line no-invalid-this
+    });
+
+    expect(files.map((file): string => file.filepath)).to.eql(
+      ["test-gulp-process.js"].map((f): string =>
+        path.join(process.cwd(), "build/src", f)
       )
-      .then(files => {
-        expect(files.map(file => file.filepath)).to.eql(
-          ["test-gulp-process.js"].map(f =>
-            path.join(process.cwd(), "build/src", f)
-          )
-        );
-      });
+    );
   });
 
   it(
     `Caching with cacheFiles({glob: 'src/test-*.js', base1: 'src',` +
       `base2: 'build/src'})`,
-    function() {
-      return cacheFiles({
+    async function(): Promise<void> {
+      await cacheFiles({
         glob: "src/test-*.js",
         base1: "src",
         base2: "build/src",
-        debug: this.debug
-      })
-        .then(() =>
-          // eslint-disable-line no-invalid-this
-          getCachedFiles({
-            glob: "src/test-*.js",
-            base1: "src",
-            base2: "build/src",
-            // eslint-disable-next-line no-invalid-this
-            debug: this.debug
-          })
+        debug: this.debug // eslint-disable-line no-invalid-this
+      });
+
+      const files = await getCachedFiles({
+        glob: "src/test-*.js",
+        base1: "src",
+        base2: "build/src",
+        debug: this.debug // eslint-disable-line no-invalid-this
+      });
+
+      expect(files.map((file): string => file.filepath)).to.eql(
+        ["test-gulp-process.js"].map((f): string =>
+          path.join(process.cwd(), "build/src", f)
         )
-        .then(files => {
-          expect(files.map(file => file.filepath)).to.eql(
-            ["test-gulp-process.js"].map(f =>
-              path.join(process.cwd(), "build/src", f)
-            )
-          );
-        });
+      );
     }
   );
 
   it(
     `Caching with cacheFiles({glob: ['src/test-*.js', ` +
       `'!src/test-gulp-process.js'], base1: 'build'})`,
-    function() {
-      return cacheFiles({
+    async function(): Promise<void> {
+      await cacheFiles({
         glob: ["src/test-*.js", "!src/test-gulp-process.js"],
         base1: "build",
-        debug: this.debug
-      }) // eslint-disable-line no-invalid-this
-        .then(() =>
-          getCachedFiles({
-            glob: ["src/test-*.js", "!src/test-gulp-process.js"],
-            base1: "build",
-            debug: this.debug
-          })
-        ) // eslint-disable-line no-invalid-this
-        .then(files => {
-          expect(files.map(file => file.filepath)).to.eql([]);
-        });
+        debug: this.debug // eslint-disable-line no-invalid-this
+      });
+
+      const files = await getCachedFiles({
+        glob: ["src/test-*.js", "!src/test-gulp-process.js"],
+        base1: "build",
+        debug: this.debug // eslint-disable-line no-invalid-this
+      });
+
+      expect(files.map((file): string => file.filepath)).to.eql([]);
     }
   );
 });

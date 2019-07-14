@@ -1,36 +1,53 @@
-import fs from "fs";
+import fs, { Stats } from "fs";
 import chalk from "chalk";
 import { rebaseGlob } from "polypath";
 
+interface CacheValue {
+  file: File;
+  content: Promise<string>;
+  stats: Promise<Stats>;
+}
+
+export interface Cache {
+  [key: string]: CacheValue;
+}
+
+interface FileOption {
+  filepath: string;
+  base1?: string;
+  base2?: string;
+  debug: boolean;
+  cache: Cache;
+}
+
 export default class File {
-  constructor({ filepath, base1, base2, debug, cache }) {
+  public readonly filepath: string;
+  public readonly debug: boolean;
+  public readonly _cache: Cache;
+
+  public constructor({ filepath, base1, base2, debug, cache }: FileOption) {
     const [file] = rebaseGlob(filepath, base1 || process.cwd(), base2);
-    Object.defineProperties(this, {
-      filepath: {
-        value: file
-      },
-      _cache: {
-        value: cache
-      },
-      debug: {
-        value: debug
-      }
-    });
+
+    this.filepath = file;
+    this.debug = debug;
+    this._cache = cache;
   }
 
-  cache() {
-    const promises = [this.content(), this.stat()];
-    const [content, stats] = promises;
-    this._cache[this.filepath] = { file: this, content, stats };
+  public cache(): void {
+    this._cache[this.filepath] = {
+      file: this,
+      content: this.content(),
+      stats: this.stat()
+    };
+
     if (this.debug) {
       console.info(`Cache size is now: ${Object.keys(this._cache).length}`);
     }
-    return Promise.all(promises);
   }
 
-  content() {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this.filepath, "utf8", (err, content) => {
+  public content(): Promise<string> {
+    return new Promise((resolve, reject): void => {
+      fs.readFile(this.filepath, "utf8", (err, content): void => {
         if (err) {
           return reject(err);
         }
@@ -39,16 +56,16 @@ export default class File {
     });
   }
 
-  stat() {
-    return new Promise((resolve, reject) => {
-      fs.stat(this.filepath, (err, stats) => {
+  public stat(): Promise<Stats> {
+    return new Promise((resolve, reject): void => {
+      fs.stat(this.filepath, (err, stats): void => {
         if (err) {
           return reject(err);
         }
         if (this.debug) {
           console.info(
             `${chalk.green(this.filepath)} was last modified: ${chalk.magenta(
-              stats.mtime
+              stats.mtime.toLocaleString()
             )}`
           );
         }
@@ -57,64 +74,64 @@ export default class File {
     });
   }
 
-  isNewer() {
-    return this._cache[this.filepath].stats.then(stat1 =>
-      this.stat().then(stat2 => {
-        const yes = stat2.mtime.getTime() > stat1.mtime.getTime();
-        if (yes && this.debug) {
-          console.info(
-            `${chalk.green(this.filepath)} is ${chalk.cyan("newer")}`
-          );
-          console.info(
-            `diff is ${chalk.cyan(
-              stat2.mtime.getTime() - stat1.mtime.getTime()
-            )} ms`
-          );
-        }
-        return yes;
-      })
-    );
+  public async isNewer(): Promise<boolean> {
+    const stat1 = await this._cache[this.filepath].stats;
+    const stat2 = await this.stat();
+
+    const yes = stat2.mtime.getTime() > stat1.mtime.getTime();
+
+    if (yes && this.debug) {
+      console.info(`${chalk.green(this.filepath)} is ${chalk.cyan("newer")}`);
+      console.info(
+        `diff is ${chalk.cyan(
+          (stat2.mtime.getTime() - stat1.mtime.getTime()).toString()
+        )} ms`
+      );
+    }
+
+    return yes;
   }
 
-  isUntouched() {
-    return this._cache[this.filepath].stats.then(stat1 =>
-      this.stat().then(stat2 => {
-        const yes = stat2.mtime.getTime() === stat1.mtime.getTime();
-        if (yes && this.debug) {
-          console.info(
-            `${chalk.green(this.filepath)} is ${chalk.cyan("untouched")}`
-          );
-        }
-        return yes;
-      })
-    );
+  public async isUntouched(): Promise<boolean> {
+    const stat1 = await this._cache[this.filepath].stats;
+    const stat2 = await this.stat();
+
+    const yes = stat2.mtime.getTime() === stat1.mtime.getTime();
+
+    if (yes && this.debug) {
+      console.info(
+        `${chalk.green(this.filepath)} is ${chalk.cyan("untouched")}`
+      );
+    }
+
+    return yes;
   }
 
-  isSameContent() {
-    return this._cache[this.filepath].content.then(content1 =>
-      this.content().then(content2 => {
-        const yes = content2 === content1;
-        if (yes && this.debug) {
-          console.info(
-            `${chalk.green(this.filepath)} is ${chalk.cyan("unchanged")}`
-          );
-        }
-        return yes;
-      })
-    );
+  public async isSameContent(): Promise<boolean> {
+    const content1 = await this._cache[this.filepath].content;
+    const content2 = await this.content();
+
+    const yes = content2 === content1;
+
+    if (yes && this.debug) {
+      console.info(
+        `${chalk.green(this.filepath)} is ${chalk.cyan("unchanged")}`
+      );
+    }
+
+    return yes;
   }
 
-  isChangedContent() {
-    return this._cache[this.filepath].content.then(content1 =>
-      this.content().then(content2 => {
-        const yes = content2 !== content1;
-        if (yes && this.debug) {
-          console.info(
-            `${chalk.green(this.filepath)} is ${chalk.cyan("changed")}`
-          );
-        }
-        return yes;
-      })
-    );
+  public async isChangedContent(): Promise<boolean> {
+    const content1 = await this._cache[this.filepath].content;
+    const content2 = await this.content();
+
+    const yes = content2 !== content1;
+
+    if (yes && this.debug) {
+      console.info(`${chalk.green(this.filepath)} is ${chalk.cyan("changed")}`);
+    }
+
+    return yes;
   }
 }

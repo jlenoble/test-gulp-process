@@ -1,82 +1,106 @@
-import childProcessData, {makeSingleTest} from 'child-process-data';
-import {spawn} from 'child_process';
-import path from 'path';
-import {newDest, copySources, copyGulpfile, copyBabelrc, linkNodeModules,
-  cleanUp, onError, wrapCallbacks} from './helpers';
-import {Messages} from './classes';
+import childProcessData, { makeSingleTest } from "child-process-data";
+import { spawn } from "child_process";
+import path from "path";
+import {
+  newDest,
+  copySources,
+  copyGulpfile,
+  copyBabelrc,
+  linkNodeModules,
+  cleanUp,
+  onError,
+  wrapCallbacks
+} from "./helpers";
+import { Messages } from "./classes";
 
-export default function testGulpProcess (opts) {
-  return function () {
-    this.timeout(opts.timeout // eslint-disable-line no-invalid-this
-      || 20000);
+export default function testGulpProcess(opts) {
+  return function() {
+    this.timeout(
+      opts.timeout || 20000 // eslint-disable-line no-invalid-this
+    );
 
     const silent = !(opts.fullDebug || testGulpProcess.fullDebug);
-    const debug = opts.debug || opts.fullDebug || testGulpProcess.debug ||
+    const debug =
+      opts.debug ||
+      opts.fullDebug ||
+      testGulpProcess.debug ||
       testGulpProcess.fullDebug;
-    const messages = new Messages(opts.messages, {debug});
+    const messages = new Messages(opts.messages, { debug });
     const dest = newDest();
 
-    let tasks = opts.task || ['default'];
+    let tasks = opts.task || ["default"];
 
     if (!Array.isArray(tasks)) {
       tasks = [tasks];
     }
 
     const tests = tasks.map((task, nth) => {
-      const options = Object.assign({
-        setupTest () {
-          this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
-          process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
-          // these tests
+      const options = Object.assign(
+        {
+          setupTest() {
+            this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
+            process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
+            // these tests
 
-          // nth: Only copy sources on first gulp call in the series of tests
-          return !nth ? Promise.all([
-            copySources(options),
-            copyGulpfile(options),
-            copyBabelrc(options),
-          ]).then(() => linkNodeModules(options)) : Promise.resolve();
-        },
+            // nth: Only copy sources on first gulp call in the series of tests
+            return !nth
+              ? Promise.all([
+                  copySources(options),
+                  copyGulpfile(options),
+                  copyBabelrc(options)
+                ]).then(() => linkNodeModules(options))
+              : Promise.resolve();
+          },
 
-        spawnTest () {
-          this.childProcess = spawn(
-            'gulp',
-            [options.task,
-              '--gulpfile',
-              path.join(options.dest, 'gulpfile.babel.js')],
-            {detached: true} // Make sure all test processes will be killed
-          );
+          spawnTest() {
+            this.childProcess = spawn(
+              "gulp",
+              [
+                options.task,
+                "--gulpfile",
+                path.join(options.dest, "gulpfile.babel.js")
+              ],
+              { detached: true } // Make sure all test processes will be killed
+            );
 
-          return childProcessData(this.childProcess, {silent});
-        },
+            return childProcessData(this.childProcess, { silent });
+          },
 
-        async checkResults (results) {
-          while (await messages.next(results)) {
-            results.testUpTo(messages.globalFns, messages.message,
-              {included: true});
-            results.forgetUpTo(messages.message, {included: true});
-            await messages.runCurrentFns(options);
-          }
+          async checkResults(results) {
+            while (await messages.next(results)) {
+              results.testUpTo(messages.globalFns, messages.message, {
+                included: true
+              });
+              results.forgetUpTo(messages.message, { included: true });
+              await messages.runCurrentFns(options);
+            }
 
-          return results;
-        },
+            return results;
+          },
 
-        tearDownTest () {
-          return cleanUp(this.childProcess, options.dest,
-            this.BABEL_DISABLE_CACHE)
-            .catch(err => {
-              console.error('Failed to clean up after test');
-              console.error('You should take time and check that:');
+          tearDownTest() {
+            return cleanUp(
+              this.childProcess,
+              options.dest,
+              this.BABEL_DISABLE_CACHE
+            ).catch(err => {
+              console.error("Failed to clean up after test");
+              console.error("You should take time and check that:");
               console.error(`- Directory ${options.dest} is deleted`);
-              console.error(`- Process ${
-                this.childProcess.pid} is not running any more`);
+              console.error(
+                `- Process ${this.childProcess.pid} is not running any more`
+              );
               return Promise.reject(err);
             });
-        },
+          },
 
-        onSetupError: onError,
-        onSpawnError: onError,
-        onCheckResultsError: onError,
-      }, opts, {dest, task, debug});
+          onSetupError: onError,
+          onSpawnError: onError,
+          onCheckResultsError: onError
+        },
+        opts,
+        { dest, task, debug }
+      );
 
       return makeSingleTest(wrapCallbacks(options));
     });
@@ -87,11 +111,11 @@ export default function testGulpProcess (opts) {
   };
 }
 
-testGulpProcess.setDebug = function (debug) {
+testGulpProcess.setDebug = function(debug) {
   testGulpProcess.debug = debug;
 };
 
-testGulpProcess.setFullDebug = function (debug) {
+testGulpProcess.setFullDebug = function(debug) {
   testGulpProcess.fullDebug = debug;
 };
 
@@ -109,5 +133,5 @@ export {
   nextTask,
   parallel,
   snapshot,
-  touchFile,
-} from './test-tools';
+  touchFile
+} from "./test-tools";

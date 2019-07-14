@@ -1,5 +1,5 @@
-import del from 'del';
-import path from 'path';
+import del from "del";
+import path from "path";
 
 export const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
   if (childProcess && childProcess.exitCode === null) {
@@ -15,11 +15,14 @@ export const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
   return Promise.resolve();
 };
 
-export function onError (err) {
+export function onError(err) {
   return this.tearDownTest() // eslint-disable-line no-invalid-this
-    .then(() => Promise.reject(err), e => {
-      console.error('Test originally failed with error:', err);
-      console.error('But another error occurred in the meantime:');
-      return Promise.reject(e);
-    });
+    .then(
+      () => Promise.reject(err),
+      e => {
+        console.error("Test originally failed with error:", err);
+        console.error("But another error occurred in the meantime:");
+        return Promise.reject(e);
+      }
+    );
 }

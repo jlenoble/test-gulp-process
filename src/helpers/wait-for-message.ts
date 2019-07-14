@@ -5,7 +5,7 @@ const repeat = (action, interval = 200, maxDuration = 4000) => {
   return new Promise((resolve, reject) => {
     const timeout = () => {
       clearInterval(intervalId);
-      reject(new Error('Waiting too long for child process to finish'));
+      reject(new Error("Waiting too long for child process to finish"));
     };
 
     const autoCleanAction = () => {
@@ -30,12 +30,13 @@ const repeat = (action, interval = 200, maxDuration = 4000) => {
 };
 
 const testMessage = (results, message) => {
-  return results.allMessages.findIndex(
-    el => el.match(new RegExp(message))) !== -1;
+  return (
+    results.allMessages.findIndex(el => el.match(new RegExp(message))) !== -1
+  );
 };
 
-export function waitForMessage (results, message) {
-  const msg = message.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
+export function waitForMessage(results, message) {
+  const msg = message.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
   return repeat(() => testMessage(results, msg)).catch(err => {
     if (err.message.match(/Waiting too long for child process to finish/)) {
       throw new Error(`Waiting too long for child process to finish:

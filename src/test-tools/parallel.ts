@@ -1,3 +1,3 @@
-import {ParallelMessages} from '../classes';
+import { ParallelMessages } from "../classes";
 
 export const parallel = (...queues) => new ParallelMessages(queues);

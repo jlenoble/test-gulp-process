@@ -1,11 +1,11 @@
-import TaskMessages from './task-messages';
-import {runNextTask} from '../test-tools';
+import TaskMessages from "./task-messages";
+import { runNextTask } from "../test-tools";
 
 const splitMessages = (messages, options) => {
   const msgs = [];
   const taskMessages = [];
 
-  for (let msg of messages) {
+  for (const msg of messages) {
     msgs.push(msg);
 
     if (Array.isArray(msg)) {
@@ -24,44 +24,44 @@ const splitMessages = (messages, options) => {
 };
 
 export default class Messages {
-  constructor (messages, options) {
+  constructor(messages, options) {
     const taskMessages = splitMessages(messages, options);
 
     Object.defineProperties(this, {
       index: {
         value: 0,
-        writable: true,
+        writable: true
       },
 
       taskMessages: {
-        get () {
+        get() {
           return taskMessages[this.index];
-        },
+        }
       },
 
       globalFns: {
-        get () {
+        get() {
           return this.taskMessages.globalFns;
-        },
+        }
       },
 
       message: {
-        get () {
+        get() {
           return this.taskMessages.message;
-        },
-      },
+        }
+      }
     });
   }
 
-  async next (results) {
+  async next(results) {
     if (this.nextTask) {
-      return this.nextTask = false;
+      return (this.nextTask = false);
     }
 
     return await this.taskMessages.next(results);
   }
 
-  async runCurrentFns (options) {
+  async runCurrentFns(options) {
     const next = await this.taskMessages.runCurrentFns(options);
 
     if (this.taskMessages.nextTask) {

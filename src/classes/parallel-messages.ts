@@ -1,13 +1,13 @@
-import chalk from 'chalk';
+import chalk from "chalk";
 
 export default class ParallelMessages {
-  constructor (queues) {
+  constructor(queues) {
     this.queues = queues.map(queue => queue.concat());
     this.messages = this.queues.map(queue => queue.shift());
     this.notStarted = true;
   }
 
-  next (foundMessage) {
+  next(foundMessage) {
     let nextMessages;
 
     if (this.notStarted) {
@@ -27,14 +27,17 @@ export default class ParallelMessages {
     }
 
     if (this.debug) {
-      console.info(`Current ${chalk.cyan('parallel')} messages '${
-        chalk.green(JSON.stringify(this.messages))}'`);
+      console.info(
+        `Current ${chalk.cyan("parallel")} messages '${chalk.green(
+          JSON.stringify(this.messages)
+        )}'`
+      );
     }
 
     return nextMessages;
   }
 
-  setDebug (debug) {
+  setDebug(debug) {
     this.debug = debug;
   }
 }

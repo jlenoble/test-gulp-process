@@ -1,6 +1,6 @@
-import {rebaseGlob, resolveGlob} from 'polypath';
-import touchMs from 'touch-ms';
-import chalk from 'chalk';
+import { rebaseGlob, resolveGlob } from "polypath";
+import touchMs from "touch-ms";
+import chalk from "chalk";
 
 export const touchFile = _file => options => {
   const destGlob = rebaseGlob(_file, options.dest);
@@ -10,8 +10,9 @@ export const touchFile = _file => options => {
       const str = JSON.stringify(destGlob);
 
       if (options && options.debug) {
-        console.info(`${chalk.cyan('Checking')} whether ${
-          chalk.green(str)} can be found`);
+        console.info(
+          `${chalk.cyan("Checking")} whether ${chalk.green(str)} can be found`
+        );
       }
 
       return Promise.reject(new Error(`${str} resolves to nothing`));
@@ -20,9 +21,10 @@ export const touchFile = _file => options => {
     return Promise.all(
       files.map(file => {
         if (options && options.debug) {
-          console.info(`${chalk.cyan('Touching')} file ${chalk.green(file)}`);
+          console.info(`${chalk.cyan("Touching")} file ${chalk.green(file)}`);
         }
         return touchMs(file);
-      }));
+      })
+    );
   });
 };

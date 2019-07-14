@@ -1,6 +1,6 @@
-import gulp from 'gulp';
+import gulp from "gulp";
 
-gulp.task('default', done => {
+gulp.task("default", done => {
   console.log(`Starting 'default'...`);
   console.log(`Starting 'exec:transpile'...`);
   console.log(`Starting 'exec:copy'...`);

@@ -1,9 +1,10 @@
-import chalk from 'chalk';
+import chalk from "chalk";
 
 export const runNextTask = options => {
   if (options && options.debug) {
-    console.info(`${chalk.cyan('Running')} next task '${
-      chalk.green(options.task)}'`);
+    console.info(
+      `${chalk.cyan("Running")} next task '${chalk.green(options.task)}'`
+    );
   }
   return `Run next ${options.task}`;
 };

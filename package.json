@@ -1,63 +1,108 @@
 {
   "name": "test-gulp-process",
-  "description": "Helpers to test Gulp processes",
   "version": "0.6.0",
-  "keywords": [],
+  "description": "Helpers to test Gulp processes",
+  "keywords": [
+    "test",
+    "gulp",
+    "process"
+  ],
+  "homepage": "https://github.com/jlenoble/test-gulp-process#readme",
+  "main": "lib/test-gulp-process.js",
+  "files": [
+    "lib"
+  ],
+  "types": "lib/test-gulp-process.d.ts",
+  "bugs": {
+    "url": "https://github.com/jlenoble/test-gulp-process/issues",
+    "email": ""
+  },
+  "scripts": {
+    "test": "gulp test"
+  },
+  "license": "MIT",
   "author": {
     "name": "Jason Lenoble",
     "email": "jason.lenoble@gmail.com"
   },
-  "contributors": [],
-  "license": "MIT",
-  "engines": {
-    "node": ">=8.5.0"
-  },
-  "main": "lib/test-gulp-process.js",
-  "scripts": {
-    "test": "gulp test"
-  },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jlenoble/test-gulp-process.git"
+    "url": "git+https://github.com/jlenoble/test-gulp-process.git"
   },
-  "bugs": {
-    "url": "https://github.com/jlenoble/test-gulp-process/issues"
+  "engines": {
+    "node": ">=10.9.0"
   },
-  "homepage": "https://github.com/jlenoble/test-gulp-process#readme",
   "dependencies": {
+    "@types/gulp-rename": "^0.0.33",
     "child-process-data": "^0.7.0",
     "cleanup-wrapper": "^0.3.0",
-    "del": "^3.0.0",
+    "del": "^5.0.0",
     "equal-file-contents": "^0.1.7",
     "equal-stream-contents": "^0.1.6",
+    "gulp-noop": "^1.0.0",
     "gulp-rename": "^1.4.0",
-    "gulp-reverse-sourcemaps": "^0.2.0",
+    "gulp-reverse-sourcemaps": "^0.2.1",
     "stat-again": "^0.3.0",
-    "touch-ms": "^0.1.0"
+    "touch-ms": "^0.1.1"
   },
   "devDependencies": {
-    "autoreload-gulp": "^0.3.0",
-    "babel-core": "^6.26.3",
-    "babel-plugin-add-module-exports": "^1.0.0",
-    "babel-preset-env": "^1.7.0",
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.0",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@babel/register": "^7.4.4",
+    "@types/chai": "^4.1.7",
+    "@types/convert-source-map": "^1.5.1",
+    "@types/ejs": "^2.6.3",
+    "@types/eslint": "^4.16.6",
+    "@types/eslint-plugin-prettier": "^2.2.0",
+    "@types/gulp": "^4.0.6",
+    "@types/gulp-babel": "^6.1.29",
+    "@types/gulp-cached": "^0.0.31",
+    "@types/gulp-mocha": "^0.0.32",
+    "@types/gulp-newer": "^0.0.31",
+    "@types/gulp-replace": "^0.0.31",
+    "@types/gulp-sourcemaps": "^0.0.32",
+    "@types/node": "^12.6.2",
+    "@types/prettier": "^1.16.4",
+    "@types/source-map-support": "^0.5.0",
+    "@typescript-eslint/eslint-plugin": "^1.12.0",
+    "@typescript-eslint/parser": "^1.12.0",
+    "autoreload-gulp": "^0.4.1",
+    "babel-plugin-add-module-exports": "^1.0.2",
     "chai": "^4.2.0",
     "convert-source-map": "^1.6.0",
-    "eslint-config-google": "^0.10.0",
-    "gulp": "^4.0.0",
-    "gulp-babel": "^7.0.1",
-    "gulp-eslint": "^5.0.0",
+    "ejs": "^2.6.2",
+    "eslint": "^6.0.1",
+    "eslint-config-google": "^0.13.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-cached": "^1.1.1",
+    "gulp-eslint": "^6.0.0",
     "gulp-mocha": "^6.0.0",
+    "gulp-newer": "^1.4.0",
     "gulp-replace": "^1.0.0",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-wrap": "^0.14.0",
-    "markdown-include": "*",
-    "muter": "*",
-    "plumb-gulp": "^0.2.1",
-    "polypath": "^0.7.0"
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-typescript": "^5.0.1",
+    "gulp-wrap": "^0.15.0",
+    "markdown-include": "^0.4.3",
+    "mocha": "<6",
+    "mochawesome": "^4.0.1",
+    "muter": "^0.7.0",
+    "plumb-gulp": "^0.2.2",
+    "polypath": "^0.7.0",
+    "prettier": "^1.18.2",
+    "source-map-support": "^0.5.12",
+    "typescript": "^3.5.3"
   },
   "peerDependencies": {
     "gulp": "^4.0.0",
     "gulp-babel": "^7.0.1",
     "polypath": ">=0.5.0"
-  }
+  },
+  "optionalDependencies": {}
 }

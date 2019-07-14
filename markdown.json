@@ -1,7 +1,0 @@
-{
-  "build": "README.md",
-  "files": ["docs/index.md"],
-  "tableOfContents": {
-    "heading": "# test-gulp-process\n\nHelpers to test Gulp processes"
-  }
-}

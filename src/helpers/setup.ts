@@ -6,15 +6,23 @@ import babel from "gulp-babel";
 import noop from "gulp-noop";
 import rename from "gulp-rename";
 
+export interface SetupOptions {
+  sources: string | string[];
+  gulpfile: string;
+  dest?: string;
+  transpileSources?: boolean;
+  transpileGulp?: boolean;
+}
+
 let counter = 0;
 
-export const newDest = () => {
+export const newDest = (): string => {
   counter++;
   return `/tmp/${path.basename(process.cwd())}_${Date.now()}_${counter}`;
 };
 
-export const copySources = options => {
-  return new Promise((resolve, reject) => {
+export const copySources = (options: SetupOptions): Promise<void> => {
+  return new Promise((resolve, reject): void => {
     gulp
       .src(options.sources, { base: process.cwd() })
       .pipe(options.transpileSources ? babel() : noop())
@@ -24,8 +32,8 @@ export const copySources = options => {
   });
 };
 
-export const copyGulpfile = options => {
-  return new Promise((resolve, reject) => {
+export const copyGulpfile = (options: SetupOptions): Promise<void> => {
+  return new Promise((resolve, reject): void => {
     gulp
       .src(options.gulpfile, { base: "test/gulpfiles" })
       .pipe(options.transpileGulp ? babel() : noop())
@@ -36,8 +44,8 @@ export const copyGulpfile = options => {
   });
 };
 
-export const copyBabelrc = options => {
-  return new Promise((resolve, reject) => {
+export const copyBabelrc = (options: SetupOptions): Promise<void> => {
+  return new Promise((resolve, reject): void => {
     gulp
       .src(".babelrc")
       .on("end", resolve)
@@ -46,8 +54,8 @@ export const copyBabelrc = options => {
   });
 };
 
-export const linkNodeModules = options => {
-  return childProcessData(
+export const linkNodeModules = async (options: SetupOptions): Promise<void> => {
+  await childProcessData(
     spawn("ln", ["-s", path.join(process.cwd(), "node_modules"), options.dest])
   );
 };

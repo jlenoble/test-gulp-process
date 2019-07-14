@@ -7,5 +7,6 @@ export {
   copySources,
   copyGulpfile,
   copyBabelrc,
-  linkNodeModules
+  linkNodeModules,
+  SetupOptions
 } from "./setup";

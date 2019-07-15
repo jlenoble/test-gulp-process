@@ -1,3 +1,5 @@
+"use strict";
+
 export interface DestOptions {
   dest: string;
   debug?: boolean;

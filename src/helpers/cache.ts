@@ -10,7 +10,7 @@ interface Option {
   glob: Glob;
   base1?: string;
   base2?: string;
-  debug: boolean;
+  debug?: boolean;
 }
 
 const cache: Cache = {};
@@ -34,7 +34,7 @@ export const cacheFiles = async ({
       console.info(`${chalk.cyan("Caching")} file '${chalk.green(file)}'`);
     }
 
-    new File({ filepath: file, debug, cache }).cache();
+    new File({ filepath: file, debug: !!debug, cache }).cache();
   });
 };
 

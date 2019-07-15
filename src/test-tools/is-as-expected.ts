@@ -1,14 +1,23 @@
 import { getCachedFiles } from "../helpers";
+import { DestFn, DestOptions } from "./options";
+import File from "../classes/file";
 
-const isAsExpected = (method, notText) => glob => options => {
-  return getCachedFiles({ glob, base1: options.dest })
-    .then(files => Promise.all(files.map(file => file[method]())))
-    .then(truths => {
-      if (!truths.every(yes => yes)) {
-        throw new Error(`${JSON.stringify(glob)} is not ${notText}`);
-      }
-      return true;
-    });
+type Func = (glob: string | string[]) => DestFn;
+type Method = "isNewer" | "isUntouched" | "isSameContent" | "isChangedContent";
+
+const isAsExpected = (method: Method, notText: string): Func => (
+  glob
+): DestFn => async (options: DestOptions): Promise<boolean> => {
+  const files: File[] = await getCachedFiles({ glob, base1: options.dest });
+  const truths = await Promise.all(
+    files.map((file): Promise<boolean> => file[method]())
+  );
+
+  if (truths.some((yes): boolean => !yes)) {
+    throw new Error(`${JSON.stringify(glob)} is not ${notText}`);
+  }
+
+  return true;
 };
 
 export const isNewer = isAsExpected("isNewer", "newer");

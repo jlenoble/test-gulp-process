@@ -4,8 +4,12 @@ import path from "path";
 import gulp from "gulp";
 import equalStreamContents from "equal-stream-contents";
 import reverse from "gulp-reverse-sourcemaps";
+import { DestFn, DestOptions } from "./options";
 
-export const hasSourcemap = (_glob, _dest) => options => {
+export const hasSourcemap = (
+  _glob: string | string[],
+  _dest: string
+): DestFn => (options: DestOptions): Promise<boolean> => {
   const dest = path.join(options.dest, _dest);
   const glob = rebaseGlob(_glob, options.dest);
   if (options && options.debug) {

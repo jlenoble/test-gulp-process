@@ -1,7 +1,14 @@
-import TaskMessages from "./task-messages";
+import TaskMessages, {
+  TaskMessagesArray,
+  TaskMessagesOptions
+} from "./task-messages";
 import { runNextTask } from "../test-tools";
+import { Result } from "child-process-data";
 
-const splitMessages = (messages, options) => {
+const splitMessages = (
+  messages: TaskMessagesArray,
+  options: TaskMessagesOptions
+): TaskMessages[] => {
   const msgs = [];
   const taskMessages = [];
 
@@ -11,7 +18,7 @@ const splitMessages = (messages, options) => {
     if (Array.isArray(msg)) {
       const [, ...fns] = msg;
 
-      if (fns.length && fns.some(fn => fn === runNextTask)) {
+      if (fns.length && fns.some((fn): boolean => fn === runNextTask)) {
         taskMessages.push(new TaskMessages(msgs, options));
         msgs.length = 0;
       }
@@ -24,36 +31,30 @@ const splitMessages = (messages, options) => {
 };
 
 export default class Messages {
-  constructor(messages, options) {
-    const taskMessages = splitMessages(messages, options);
+  protected nextTask: boolean = false;
+  protected index: number = 0;
+  protected _taskMessages: TaskMessages[];
 
-    Object.defineProperties(this, {
-      index: {
-        value: 0,
-        writable: true
-      },
-
-      taskMessages: {
-        get() {
-          return taskMessages[this.index];
-        }
-      },
-
-      globalFns: {
-        get() {
-          return this.taskMessages.globalFns;
-        }
-      },
-
-      message: {
-        get() {
-          return this.taskMessages.message;
-        }
-      }
-    });
+  public get taskMessages(): TaskMessages {
+    return this._taskMessages[this.index];
   }
 
-  async next(results) {
+  public get globalFns(): TaskMessages {
+    return this.taskMessages.globalFns;
+  }
+
+  public get message(): string {
+    return this.taskMessages.message;
+  }
+
+  public constructor(
+    messages: TaskMessagesArray,
+    options: TaskMessagesOptions
+  ) {
+    this._taskMessages = splitMessages(messages, options);
+  }
+
+  public async next(results: Result): Promise<boolean> {
     if (this.nextTask) {
       return (this.nextTask = false);
     }
@@ -61,7 +62,7 @@ export default class Messages {
     return await this.taskMessages.next(results);
   }
 
-  async runCurrentFns(options) {
+  public async runCurrentFns(options: TaskMessagesOptions): Promise<boolean> {
     const next = await this.taskMessages.runCurrentFns(options);
 
     if (this.taskMessages.nextTask) {

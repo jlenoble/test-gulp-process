@@ -17,8 +17,15 @@ export const hasSourcemap = (
       `${chalk.cyan("Checking")} sourcemaps for ${chalk.green(glob)}`
     );
   }
+
   return equalStreamContents(
     gulp.src(glob),
-    gulp.src(rebaseGlob(_glob, dest)).pipe(reverse(options.dest))
+    gulp
+      .src(
+        rebaseGlob(_glob, dest).map((glb: string): string => {
+          return glb.replace(/\.\w+$/, ".js");
+        })
+      )
+      .pipe(reverse(options.dest))
   );
 };

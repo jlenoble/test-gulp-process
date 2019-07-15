@@ -10,6 +10,7 @@ export interface SetupOptions {
   sources: string | string[];
   gulpfile: string;
   dest?: string;
+  createDest?: boolean;
   transpileSources?: boolean;
   transpileGulp?: boolean;
 }
@@ -18,6 +19,7 @@ export interface NormalizedSetupOptions {
   sources: string | string[];
   gulpfile: string;
   dest: string;
+  createDest: boolean;
   transpileSources: boolean;
   transpileGulp: boolean;
 }

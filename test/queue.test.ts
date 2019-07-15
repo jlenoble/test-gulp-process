@@ -75,7 +75,6 @@ describe("Testing Gulpfile", (): void => {
       ],
 
       onError(err): void {
-        console.log(err);
         expect(err.message).to.match(
           /Waiting too long for child process to finish/
         );

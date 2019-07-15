@@ -1,10 +1,10 @@
 import TaskMessages, {
   TaskMessagesArray,
-  TaskMessagesOptions
+  TaskMessagesOptions,
+  TestFunction
 } from "./task-messages";
 import { runNextTask } from "../test-tools";
 import { Result } from "child-process-data";
-import { Fn } from "../test-tools/options";
 
 const splitMessages = (
   messages: TaskMessagesArray,
@@ -40,7 +40,7 @@ export default class Messages {
     return this._taskMessages[this.index];
   }
 
-  public get globalFns(): Fn[] {
+  public get globalFns(): TestFunction[] {
     return this.taskMessages.globalFns;
   }
 

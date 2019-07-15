@@ -100,14 +100,15 @@ export class TestGulpProcess extends SingleTest {
     process.env.BABEL_DISABLE_CACHE = "1"; // Don't use Babel caching for
     // these tests
 
-    // nth: Only copy sources on first gulp call in the series of tests
-    await Promise.all([
-      copySources(this._setupOptions),
-      copyGulpfile(this._setupOptions),
-      copyBabelrc(this._setupOptions)
-    ]);
+    if (this._setupOptions.createDest) {
+      await Promise.all([
+        copySources(this._setupOptions),
+        copyGulpfile(this._setupOptions),
+        copyBabelrc(this._setupOptions)
+      ]);
 
-    await linkNodeModules(this._setupOptions);
+      await linkNodeModules(this._setupOptions);
+    }
   }
 
   public async spawnTest(): Promise<void> {

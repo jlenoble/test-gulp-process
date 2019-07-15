@@ -4,6 +4,8 @@ import { Fn } from "../test-tools/options";
 import ParallelMessages from "./parallel-messages";
 import { Result } from "child-process-data";
 
+export type TestFunction = (msg: string) => boolean;
+
 type MessageOption = string | Fn | (string | Fn)[] | ParallelMessages;
 export type TaskMessagesArray = MessageOption[];
 
@@ -23,7 +25,7 @@ export default class TaskMessages {
   protected messages: IterableIterator<MessageOption>;
   protected currentParallelMessages: string[] = [];
   protected parallelMessages: ParallelMessages | null = null;
-  protected _globalFns: Fn[] = [];
+  protected _globalFns: TestFunction[] = [];
   protected fns: Fn[] | null = [];
   protected _nextTask: boolean = false;
 
@@ -35,7 +37,7 @@ export default class TaskMessages {
     this._message = str;
   }
 
-  public get globalFns(): Fn[] {
+  public get globalFns(): TestFunction[] {
     return this._globalFns.concat();
   }
 
@@ -84,7 +86,7 @@ export default class TaskMessages {
       );
       return this.next(results);
     } else if (typeof value === "function") {
-      this._globalFns.push(value);
+      this._globalFns.push(value as TestFunction);
       return this.next(results);
     } else if (value instanceof ParallelMessages) {
       this.parallelMessages = value;

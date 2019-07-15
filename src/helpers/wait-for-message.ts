@@ -1,7 +1,7 @@
 import { Result } from "child-process-data";
 
 const repeat = (
-  action,
+  action: () => boolean,
   interval = 200,
   maxDuration = 4000
 ): Promise<boolean> => {
@@ -47,9 +47,10 @@ export async function waitForMessage(
   message: string
 ): Promise<boolean> {
   const msg = message.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+  let success = false;
 
   try {
-    return repeat((): boolean => testMessage(results, msg));
+    success = await repeat((): boolean => testMessage(results, msg));
   } catch (err) {
     if (err.message.match(/Waiting too long for child process to finish/)) {
       throw new Error(`Waiting too long for child process to finish:
@@ -57,4 +58,6 @@ Message '${message}' was never intercepted`);
     }
     throw err;
   }
+
+  return success;
 }

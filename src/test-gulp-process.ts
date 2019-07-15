@@ -78,9 +78,7 @@ export class TestGulpProcess extends SingleTest {
       await this.setupTest();
       await this.spawnTest();
       await this.checkResults();
-      console.log("success", this._task);
     } catch (err) {
-      console.log("error");
       try {
         await this.onError(err);
       } catch (e) {
@@ -141,8 +139,6 @@ export class TestGulpProcess extends SingleTest {
     }
 
     while (await this._messages.next(this._results)) {
-      console.log("<<<<<<<<<<<<<!!!");
-      console.log(this._messages.message);
       this._results.testUpTo(this._messages.globalFns, this._messages.message, {
         included: true
       });

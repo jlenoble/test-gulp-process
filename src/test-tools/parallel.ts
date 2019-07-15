@@ -1,4 +1,4 @@
 import { ParallelMessages } from "../classes";
 
-export const parallel = (...queues): ParallelMessages =>
+export const parallel = (...queues: string[][]): ParallelMessages =>
   new ParallelMessages(queues);

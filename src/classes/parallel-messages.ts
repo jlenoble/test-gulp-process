@@ -6,8 +6,8 @@ export default class ParallelMessages {
   protected queues: string[][];
   protected messages: string[];
 
-  public constructor(queues: string[]) {
-    this.queues = queues.map((queue): string[] => [...queue]);
+  public constructor(queues: string[][]) {
+    this.queues = queues.map((queue): string[] => queue.concat());
     this.messages = this.queues.map((queue): string => queue.shift() as string);
     this.notStarted = true;
   }

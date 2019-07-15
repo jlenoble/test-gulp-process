@@ -1,30 +1,38 @@
 import { rebaseGlob, resolveGlob } from "polypath";
 import touchMs from "touch-ms";
 import chalk from "chalk";
+import { DestOptions, Fn } from "./options";
 
-export const touchFile = _file => options => {
-  const destGlob = rebaseGlob(_file, options.dest);
+export const touchFile = (_file: string): Fn => async ({
+  dest,
+  debug
+}: DestOptions): Promise<boolean> => {
+  const destGlob = rebaseGlob(_file, dest);
+  const files: string[] = await resolveGlob(destGlob);
 
-  return resolveGlob(destGlob).then(files => {
-    if (!files.length) {
-      const str = JSON.stringify(destGlob);
+  if (!files.length) {
+    const str = JSON.stringify(destGlob);
 
-      if (options && options.debug) {
-        console.info(
-          `${chalk.cyan("Checking")} whether ${chalk.green(str)} can be found`
-        );
-      }
-
-      return Promise.reject(new Error(`${str} resolves to nothing`));
+    if (debug) {
+      console.info(
+        `${chalk.cyan("Checking")} whether ${chalk.green(str)} can be found`
+      );
     }
 
-    return Promise.all(
-      files.map(file => {
-        if (options && options.debug) {
+    throw new Error(`${str} resolves to nothing`);
+  }
+
+  const touched = await Promise.all(
+    files.map(
+      (file): Promise<boolean> => {
+        if (debug) {
           console.info(`${chalk.cyan("Touching")} file ${chalk.green(file)}`);
         }
+
         return touchMs(file);
-      })
-    );
-  });
+      }
+    )
+  );
+
+  return touched.every((f): boolean => !!f);
 };

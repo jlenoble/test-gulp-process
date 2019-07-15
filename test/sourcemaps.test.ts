@@ -17,7 +17,7 @@ describe("Testing Gulpfile", (): void => {
         `Starting 'exec'...`,
         [
           `Finished 'exec' after`,
-          isFound("src/test-gulp-process.js"),
+          isFound("src/test-gulp-process.ts"),
           isFound("build/src/test-gulp-process.js"),
           hasSourcemap("src/**/*.ts", "build")
         ],

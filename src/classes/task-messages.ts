@@ -1,9 +1,10 @@
 import chalk from "chalk";
 import { waitForMessage } from "../helpers";
+import { Fn } from "../test-tools/options";
 import ParallelMessages from "./parallel-messages";
 import { Result } from "child-process-data";
 
-type MessageOption = string | [string, any];
+type MessageOption = string | (string | Fn)[];
 export type TaskMessagesArray = MessageOption[];
 
 export interface TaskMessagesOptions {

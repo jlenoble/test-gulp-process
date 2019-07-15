@@ -1,13 +1,9 @@
 import chalk from "chalk";
+import { NeverOptions, NeverFn } from "./options";
 
-interface Options {
-  debug?: boolean;
-}
-type Fn = (msg: string, options: Options) => boolean;
-
-export const never = (_msg: string): Fn => (
+export const never = (_msg: string): NeverFn => (
   msg: string,
-  { debug }: Options = {}
+  { debug }: NeverOptions = {}
 ): boolean => {
   if (debug) {
     console.info(

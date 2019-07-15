@@ -3,4 +3,12 @@ export interface DestOptions {
   debug?: boolean;
 }
 
-export type Fn = (options: DestOptions) => Promise<boolean>;
+export type DestFn = (options: DestOptions) => Promise<boolean>;
+
+export interface NeverOptions {
+  debug?: boolean;
+}
+
+export type NeverFn = (msg: string, options: NeverOptions) => boolean;
+
+export type Fn = DestFn | NeverFn;

@@ -1,35 +1,40 @@
 import { rebaseGlob, resolveGlob } from "polypath";
 import chalk from "chalk";
 import { expectEventuallyDeleted } from "stat-again";
+import { DestOptions, Fn } from "./options";
 
-export const isDeleted = _file => options => {
-  const destGlob = rebaseGlob(_file, options.dest);
+export const isDeleted = (_file: string): Fn => async ({
+  dest,
+  debug
+}: DestOptions): Promise<boolean> => {
+  const destGlob = rebaseGlob(_file, dest);
+  const files: string[] = await resolveGlob(destGlob);
 
-  return resolveGlob(destGlob).then(files => {
-    if (!files.length) {
-      const str = JSON.stringify(destGlob);
+  if (!files.length) {
+    const str = JSON.stringify(destGlob);
 
-      if (options && options.debug) {
-        console.info(
-          `${chalk.cyan("Checking")} whether ${chalk.green(str)} is deleted`
-        );
-
-        console.info(`${chalk.green(str)} resolves to nothing`);
-      }
-
-      return Promise.resolve();
+    if (debug) {
+      console.info(
+        `${chalk.cyan("Checking")} whether ${chalk.green(str)} is deleted`
+      );
     }
 
-    return Promise.all(
-      files.map(file => {
-        if (options && options.debug) {
+    throw new Error(`${str} resolves to nothing`);
+  }
+
+  const found = await Promise.all(
+    files.map(
+      (file): Promise<boolean> => {
+        if (debug) {
           console.info(
             `${chalk.cyan("Checking")} whether ${chalk.green(file)} is deleted`
           );
         }
 
         return expectEventuallyDeleted(file);
-      })
-    );
-  });
+      }
+    )
+  );
+
+  return found.every((f): boolean => f);
 };

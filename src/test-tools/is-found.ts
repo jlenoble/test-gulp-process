@@ -1,17 +1,12 @@
 import { resolveGlob, rebaseGlob } from "polypath";
 import chalk from "chalk";
 import { expectEventuallyFound } from "stat-again";
-
-interface Options {
-  dest: string;
-  debug?: boolean;
-}
-type Fn = (options: Options) => Promise<boolean>;
+import { DestOptions, Fn } from "./options";
 
 export const isFound = (_file: string): Fn => async ({
   dest,
   debug
-}: Options): Promise<boolean> => {
+}: DestOptions): Promise<boolean> => {
   const destGlob = rebaseGlob(_file, dest);
   const files: string[] = await resolveGlob(destGlob);
 

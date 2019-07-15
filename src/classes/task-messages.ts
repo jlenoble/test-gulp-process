@@ -24,7 +24,15 @@ export default class TaskMessages {
   protected parallelMessages: ParallelMessages | null = null;
   protected globalFns = [];
   protected fns = [];
-  protected nextTask: boolean = false;
+  protected _nextTask: boolean = false;
+
+  public get nextTask(): boolean {
+    return this._nextTask;
+  }
+
+  public set nextTask(yes: boolean) {
+    this._nextTask = yes;
+  }
 
   public constructor(msgs: TaskMessagesArray, options: TaskMessagesOptions) {
     // Clone msgs to not share it across instances

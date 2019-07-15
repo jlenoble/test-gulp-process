@@ -1,7 +1,8 @@
 import {
   ChildProcessData,
   SingleTest,
-  SingleOptions
+  SingleOptions,
+  ErrorWithHistory
 } from "child-process-data";
 import { spawn } from "child_process";
 import path from "path";
@@ -169,6 +170,17 @@ export class TestGulpProcess extends SingleTest {
       console.error(
         `- Process ${this._childProcess.pid} is not running any more`
       );
+      throw err;
+    }
+  }
+
+  public async onError(err: ErrorWithHistory): Promise<void> {
+    if (this._debug) {
+      console.log("[testGulpProcess] onError");
+    }
+    if (this._options.onError) {
+      return this._options.onError(err);
+    } else {
       throw err;
     }
   }

@@ -17,9 +17,11 @@ export const isDeleted = (_file: string): Fn => async ({
       console.info(
         `${chalk.cyan("Checking")} whether ${chalk.green(str)} is deleted`
       );
+
+      console.info(`${chalk.green(str)} resolves to nothing`);
     }
 
-    throw new Error(`${str} resolves to nothing`);
+    return false;
   }
 
   const found = await Promise.all(

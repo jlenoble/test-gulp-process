@@ -3,12 +3,13 @@ import testGulpProcess, {
   isFound
 } from "../src/test-gulp-process";
 
-describe("Testing Gulpfile", () => {
+describe("Testing Gulpfile", (): void => {
   it(
     `Testing a transpile task with sourcemaps`,
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-sourcemaps.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [

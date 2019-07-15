@@ -12,6 +12,7 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-transpile-all.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -19,7 +20,7 @@ describe("Testing Gulpfile", (): void => {
         `Starting 'exec:transpile:all'...`,
         [
           `Finished 'exec:transpile:all' after`,
-          isFound("src/test-gulp-process.js"),
+          isFound("src/test-gulp-process.ts"),
           isFound("build/src/test-gulp-process.js"),
           compareTranspiled("src/**/*.ts", "build")
         ],
@@ -33,6 +34,7 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -46,7 +48,7 @@ describe("Testing Gulpfile", (): void => {
         `Starting 'watch:transpile:all'...`,
         `Finished 'watch:transpile:all' after`,
         `Finished 'tdd:transpile:all' after`,
-        [`Finished 'default' after`, touchFile("src/test-gulp-process.js")],
+        [`Finished 'default' after`, touchFile("src/test-gulp-process.ts")],
         `Starting 'exec:transpile:all'...`,
         `Finished 'exec:transpile:all' after`
       ]
@@ -58,6 +60,7 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -73,14 +76,14 @@ describe("Testing Gulpfile", (): void => {
         `Finished 'tdd:transpile:all' after`,
         [
           `Finished 'default' after`,
-          deleteFile("src/test-gulp-process.js"),
+          deleteFile("src/test-gulp-process.ts"),
           deleteFile("build/src/test-gulp-process.js")
         ],
         `Starting 'exec:transpile:all'...`,
         [
           `Finished 'exec:transpile:all' after`,
           compareTranspiled("src/**/*.ts", "build"),
-          isDeleted("src/test-gulp-process.js"),
+          isDeleted("src/test-gulp-process.ts"),
           isDeleted("build/src/test-gulp-process.js")
         ]
       ]

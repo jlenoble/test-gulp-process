@@ -1,12 +1,13 @@
 import testGulpProcess, { parallel } from "../src/test-gulp-process";
 import { expect } from "chai";
 
-describe("Testing Gulpfile", () => {
+describe("Testing Gulpfile", (): void => {
   it(
     `Testing a queue of in order messages`,
     testGulpProcess({
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -22,6 +23,7 @@ describe("Testing Gulpfile", () => {
     testGulpProcess({
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -37,6 +39,7 @@ describe("Testing Gulpfile", () => {
     testGulpProcess({
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -57,6 +60,7 @@ describe("Testing Gulpfile", () => {
     testGulpProcess({
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -70,7 +74,8 @@ describe("Testing Gulpfile", () => {
         `Finished 'default' after`
       ],
 
-      onCheckResultsError(err) {
+      onError(err): void {
+        console.log(err);
         expect(err.message).to.match(
           /Waiting too long for child process to finish/
         );
@@ -84,6 +89,7 @@ describe("Testing Gulpfile", () => {
     testGulpProcess({
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue-bugfix1.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [

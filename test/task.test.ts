@@ -9,6 +9,7 @@ describe("Testing Gulpfile task", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [`Starting 'default'...`, "coucou", `Finished 'default' after`]
@@ -21,6 +22,7 @@ describe("Testing Gulpfile task", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: "hello",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -39,6 +41,7 @@ describe("Testing Gulpfile task", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -67,6 +70,7 @@ describe("Testing Gulpfile task", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -81,7 +85,7 @@ describe("Testing Gulpfile task", (): void => {
         `Finished 'ciao' after`
       ],
 
-      onCheckResultsError: function(err: ErrorWithHistory): void {
+      onError: function(err: ErrorWithHistory): void {
         try {
           expect(err).to.match(/Waiting too long for child process to finish:/);
           expect(err).to.match(
@@ -94,7 +98,6 @@ describe("Testing Gulpfile task", (): void => {
               )}`
             );
           }
-          Promise.resolve(err.results);
         } catch (e) {
           try {
             expect(err).to.match(
@@ -107,9 +110,8 @@ describe("Testing Gulpfile task", (): void => {
                 )}`
               );
             }
-            Promise.resolve(err.results);
           } catch (e) {
-            Promise.reject(err);
+            throw err;
           }
         }
       }

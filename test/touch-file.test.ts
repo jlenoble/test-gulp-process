@@ -7,6 +7,7 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -17,7 +18,7 @@ describe("Testing Gulpfile", (): void => {
         `Starting 'watch:transpile:all'...`,
         `Finished 'watch:transpile:all' after`,
         `Finished 'tdd:transpile:all' after`,
-        [`Finished 'default' after`, touchFile("src/test-tools/*.js")],
+        [`Finished 'default' after`, touchFile("src/test-tools/*.ts")],
         `Starting 'exec:transpile:all'...`,
         `Finished 'exec:transpile:all' after`
       ]
@@ -29,7 +30,8 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
-      debug: true,
+      transpileGulp: true,
+      fullDebug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -39,12 +41,12 @@ describe("Testing Gulpfile", (): void => {
         `Starting 'watch:transpile:all'...`,
         `Finished 'watch:transpile:all' after`,
         `Finished 'tdd:transpile:all' after`,
-        [`Finished 'default' after`, touchFile("badsrc/test-tools/*.js")],
+        [`Finished 'default' after`, touchFile("badsrc/test-tools/*.ts")],
         `Starting 'exec:transpile:all'...`,
         `Finished 'exec:transpile:all' after`
       ],
 
-      onCheckResultsError(err: Error): void {
+      onError(err: Error): void {
         expect(err.message).to.match(/resolves to nothing/);
       }
     })
@@ -55,6 +57,7 @@ describe("Testing Gulpfile", (): void => {
     testGulpProcess({
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
+      transpileGulp: true,
       debug: true,
 
       messages: [
@@ -70,7 +73,7 @@ describe("Testing Gulpfile", (): void => {
         `Finished 'exec:transpile:all' after`
       ],
 
-      onCheckResultsError(err: Error): void {
+      onError(err: Error): void {
         expect(err.message).to.match(/resolves to nothing/);
       }
     })

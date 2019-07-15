@@ -1,7 +1,15 @@
 import chalk from "chalk";
 
-export const never = _msg => (msg, options) => {
-  if (options && options.debug) {
+interface Options {
+  debug?: boolean;
+}
+type Fn = (msg: string, options: Options) => boolean;
+
+export const never = (_msg: string): Fn => (
+  msg: string,
+  { debug }: Options = {}
+): boolean => {
+  if (debug) {
     console.info(
       `${chalk.cyan("ensuring")} '${chalk.green(
         msg

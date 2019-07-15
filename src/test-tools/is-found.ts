@@ -2,25 +2,35 @@ import { resolveGlob, rebaseGlob } from "polypath";
 import chalk from "chalk";
 import { expectEventuallyFound } from "stat-again";
 
-export const isFound = _file => options => {
-  const destGlob = rebaseGlob(_file, options.dest);
+interface Options {
+  dest: string;
+  debug?: boolean;
+}
+type Fn = (options: Options) => Promise<boolean>;
 
-  return resolveGlob(destGlob).then(files => {
-    if (!files.length) {
-      const str = JSON.stringify(destGlob);
+export const isFound = (_file: string): Fn => async ({
+  dest,
+  debug
+}: Options): Promise<boolean> => {
+  const destGlob = rebaseGlob(_file, dest);
+  const files: string[] = await resolveGlob(destGlob);
 
-      if (options && options.debug) {
-        console.info(
-          `${chalk.cyan("Checking")} whether ${chalk.green(str)} can be found`
-        );
-      }
+  if (!files.length) {
+    const str = JSON.stringify(destGlob);
 
-      return Promise.reject(new Error(`${str} resolves to nothing`));
+    if (debug) {
+      console.info(
+        `${chalk.cyan("Checking")} whether ${chalk.green(str)} can be found`
+      );
     }
 
-    return Promise.all(
-      files.map(file => {
-        if (options && options.debug) {
+    throw new Error(`${str} resolves to nothing`);
+  }
+
+  const found = await Promise.all(
+    files.map(
+      (file): Promise<boolean> => {
+        if (debug) {
           console.info(
             `${chalk.cyan("Checking")} whether ${chalk.green(
               file
@@ -29,7 +39,9 @@ export const isFound = _file => options => {
         }
 
         return expectEventuallyFound(file);
-      })
-    );
-  });
+      }
+    )
+  );
+
+  return found.every((f): boolean => f);
 };

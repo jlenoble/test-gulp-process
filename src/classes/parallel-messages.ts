@@ -1,23 +1,30 @@
 import chalk from "chalk";
 
 export default class ParallelMessages {
-  constructor(queues) {
-    this.queues = queues.map(queue => queue.concat());
-    this.messages = this.queues.map(queue => queue.shift());
+  protected debug: boolean = false;
+  protected notStarted: boolean = true;
+  protected queues: string[][];
+  protected messages: string[];
+
+  public constructor(queues: string[]) {
+    this.queues = queues.map((queue): string[] => [...queue]);
+    this.messages = this.queues.map((queue): string => queue.shift() as string);
     this.notStarted = true;
   }
 
-  next(foundMessage) {
-    let nextMessages;
+  public next(foundMessage: string): string[] {
+    let nextMessages: string[];
 
     if (this.notStarted) {
       this.notStarted = false;
       nextMessages = this.messages;
     } else {
-      const index = this.messages.findIndex(msg => msg === foundMessage);
+      const index = this.messages.findIndex(
+        (msg): boolean => msg === foundMessage
+      );
       const queue = this.queues[index];
       if (queue.length) {
-        this.messages[index] = queue.shift();
+        this.messages[index] = queue.shift() as string;
         nextMessages = [this.messages[index]];
       } else {
         this.messages.splice(index, 1);
@@ -37,7 +44,7 @@ export default class ParallelMessages {
     return nextMessages;
   }
 
-  setDebug(debug) {
+  public setDebug(debug: boolean): void {
     this.debug = debug;
   }
 }

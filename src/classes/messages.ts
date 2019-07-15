@@ -4,6 +4,7 @@ import TaskMessages, {
 } from "./task-messages";
 import { runNextTask } from "../test-tools";
 import { Result } from "child-process-data";
+import { Fn } from "../test-tools/options";
 
 const splitMessages = (
   messages: TaskMessagesArray,
@@ -39,7 +40,7 @@ export default class Messages {
     return this._taskMessages[this.index];
   }
 
-  public get globalFns(): TaskMessages {
+  public get globalFns(): Fn[] {
     return this.taskMessages.globalFns;
   }
 
@@ -62,8 +63,8 @@ export default class Messages {
     return await this.taskMessages.next(results);
   }
 
-  public async runCurrentFns(options: TaskMessagesOptions): Promise<boolean> {
-    const next = await this.taskMessages.runCurrentFns(options);
+  public async runCurrentFns(options: TaskMessagesOptions): Promise<void> {
+    const next = this.taskMessages.runCurrentFns(options);
 
     if (this.taskMessages.nextTask) {
       this.index++;

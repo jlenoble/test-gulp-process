@@ -4,7 +4,7 @@ import { Fn } from "../test-tools/options";
 import ParallelMessages from "./parallel-messages";
 import { Result } from "child-process-data";
 
-type MessageOption = string | (string | Fn)[];
+type MessageOption = string | Fn | (string | Fn)[] | ParallelMessages;
 export type TaskMessagesArray = MessageOption[];
 
 export interface TaskMessagesOptions {
@@ -19,13 +19,25 @@ const genMessages = function*(
 
 export default class TaskMessages {
   protected debug: boolean;
-  protected message?: MessageOption;
+  protected _message?: string;
   protected messages: IterableIterator<MessageOption>;
   protected currentParallelMessages: string[] = [];
   protected parallelMessages: ParallelMessages | null = null;
-  protected globalFns = [];
-  protected fns = [];
+  protected _globalFns: Fn[] = [];
+  protected fns: Fn[] | null = [];
   protected _nextTask: boolean = false;
+
+  public get message(): string {
+    return this._message || "";
+  }
+
+  public set message(str: string) {
+    this._message = str;
+  }
+
+  public get globalFns(): Fn[] {
+    return this._globalFns.concat();
+  }
 
   public get nextTask(): boolean {
     return this._nextTask;
@@ -58,19 +70,21 @@ export default class TaskMessages {
 
     // No parallel messages left, process next message
     const message = this.messages.next();
-    const value = message.value;
+    const value: MessageOption = message.value;
 
     if (typeof value === "string") {
       this.message = value;
       this.fns = null;
     } else if (Array.isArray(value)) {
-      this.fns = value.filter((fn): boolean => typeof fn === "function");
+      this.fns = value.filter(
+        (fn): boolean => typeof fn === "function"
+      ) as Fn[];
       this.currentParallelMessages.push(
-        ...value.filter((fn): boolean => typeof fn !== "function")
+        ...(value.filter((fn): boolean => typeof fn !== "function") as string[])
       );
       return this.next(results);
     } else if (typeof value === "function") {
-      this.globalFns.push(value);
+      this._globalFns.push(value);
       return this.next(results);
     } else if (value instanceof ParallelMessages) {
       this.parallelMessages = value;
@@ -80,11 +94,13 @@ export default class TaskMessages {
 
     if (!message.done && this.debug) {
       console.info(
-        `${chalk.cyan("Waiting for")} message '${chalk.green(this.message)}'`
+        `${chalk.cyan("Waiting for")} message ${chalk.green(
+          this.message || ""
+        )}`
       );
     }
 
-    return !message.done && (await waitForMessage(results, this.message));
+    return !message.done && (await waitForMessage(results, this.message || ""));
   }
 
   public async nextParallel(results: Result): Promise<boolean> {
@@ -103,10 +119,9 @@ export default class TaskMessages {
 
     await waitForMessage(results, searchedMessage);
 
-    const indices = this.currentParallelMessages.map((msg): [
-      number,
-      number
-    ] => {
+    const indices = this.currentParallelMessages.map((msg):
+      | [number, number]
+      | null => {
       const _msg = msg.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
       const index = results
         .allMessages()
@@ -119,7 +134,11 @@ export default class TaskMessages {
     });
 
     let pos = 0;
-    indices.reduce((idx1, idx2, i): [number, number] => {
+    indices.reduce((idx1, idx2, i): [number, number] | null => {
+      if (idx1 === null) {
+        return idx2;
+      }
+
       if (
         idx2 &&
         (idx2[0] < idx1[0] || (idx2[0] === idx1[0] && idx2[1] < idx1[1]))
@@ -127,6 +146,7 @@ export default class TaskMessages {
         pos = i;
         return idx2;
       }
+
       return idx1;
     });
 
@@ -146,12 +166,14 @@ export default class TaskMessages {
     return true;
   }
 
-  public async runCurrentFns(options): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async runCurrentFns(options: any): Promise<void> {
     if (this.fns === null) {
       return;
     }
 
     for (const fn of this.fns) {
+      // @ts-ignore
       if (`Run next ${options.task}` === (await fn(options))) {
         this.nextTask = true;
       }

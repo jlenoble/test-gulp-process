@@ -1,36 +1,40 @@
 import chalk from "chalk";
 import { waitForMessage } from "../helpers";
 import ParallelMessages from "./parallel-messages";
+import { Result } from "child-process-data";
 
-const genMessages = function*(messages) {
+type MessageOption = string | [string, any];
+export type TaskMessagesArray = MessageOption[];
+
+export interface TaskMessagesOptions {
+  debug?: boolean;
+}
+
+const genMessages = function*(
+  messages: TaskMessagesArray
+): IterableIterator<MessageOption> {
   yield* messages;
 };
 
 export default class TaskMessages {
-  constructor(msgs, options) {
+  protected debug: boolean;
+  protected message?: MessageOption;
+  protected messages: IterableIterator<MessageOption>;
+  protected currentParallelMessages: string[] = [];
+  protected parallelMessages: ParallelMessages | null = null;
+  protected globalFns = [];
+  protected fns = [];
+  protected nextTask: boolean = false;
+
+  public constructor(msgs: TaskMessagesArray, options: TaskMessagesOptions) {
     // Clone msgs to not share it across instances
     const messages = msgs.concat();
+    this.messages = genMessages(messages);
 
-    Object.defineProperties(this, {
-      messages: {
-        value: genMessages(messages)
-      },
-
-      currentParallelMessages: {
-        value: []
-      },
-
-      globalFns: {
-        value: []
-      },
-
-      debug: {
-        value: !!(options && options.debug)
-      }
-    });
+    this.debug = !!(options && options.debug);
   }
 
-  async next(results) {
+  public async next(results: Result): Promise<boolean> {
     if (this.parallelMessages) {
       this.currentParallelMessages.push(
         ...this.parallelMessages.next(this.message)
@@ -51,9 +55,9 @@ export default class TaskMessages {
       this.message = value;
       this.fns = null;
     } else if (Array.isArray(value)) {
-      this.fns = value.filter(fn => typeof fn === "function");
+      this.fns = value.filter((fn): boolean => typeof fn === "function");
       this.currentParallelMessages.push(
-        ...value.filter(fn => typeof fn !== "function")
+        ...value.filter((fn): boolean => typeof fn !== "function")
       );
       return this.next(results);
     } else if (typeof value === "function") {
@@ -74,7 +78,7 @@ export default class TaskMessages {
     return !message.done && (await waitForMessage(results, this.message));
   }
 
-  async nextParallel(results) {
+  public async nextParallel(results: Result): Promise<boolean> {
     // Parallel messages are treated as 'equivalent'.
     // We search for the first to appear in results and expose it as
     // this.message while removing it from the buffer.
@@ -90,20 +94,23 @@ export default class TaskMessages {
 
     await waitForMessage(results, searchedMessage);
 
-    const indices = this.currentParallelMessages.map(msg => {
+    const indices = this.currentParallelMessages.map((msg): [
+      number,
+      number
+    ] => {
       const _msg = msg.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
-      const index = results.allMessages.findIndex(el =>
-        el.match(new RegExp(_msg))
-      );
+      const index = results
+        .allMessages()
+        .findIndex((el): boolean => !!el.match(new RegExp(_msg)));
       if (index === -1) {
         return null;
       }
-      const pos = results.allMessages[index].indexOf(msg);
+      const pos = results.allMessages()[index].indexOf(msg);
       return [index, pos];
     });
 
     let pos = 0;
-    indices.reduce((idx1, idx2, i) => {
+    indices.reduce((idx1, idx2, i): [number, number] => {
       if (
         idx2 &&
         (idx2[0] < idx1[0] || (idx2[0] === idx1[0] && idx2[1] < idx1[1]))
@@ -130,7 +137,7 @@ export default class TaskMessages {
     return true;
   }
 
-  async runCurrentFns(options) {
+  public async runCurrentFns(options): Promise<void> {
     if (this.fns === null) {
       return;
     }

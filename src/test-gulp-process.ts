@@ -1,4 +1,8 @@
-import childProcessData, { makeSingleTest } from "child-process-data";
+import {
+  ChildProcessData,
+  SingleTest,
+  SingleOptions
+} from "child-process-data";
 import { spawn } from "child_process";
 import path from "path";
 import {
@@ -8,116 +12,223 @@ import {
   copyBabelrc,
   linkNodeModules,
   cleanUp,
-  onError,
-  wrapCallbacks
+  SetupOptions,
+  NormalizedSetupOptions
 } from "./helpers";
-import { Messages } from "./classes";
+import { Messages, TaskMessagesArray } from "./classes";
 
-export default function testGulpProcess(opts) {
-  return function() {
-    this.timeout(
-      opts.timeout || 20000 // eslint-disable-line no-invalid-this
-    );
-
-    const silent = !(opts.fullDebug || testGulpProcess.fullDebug);
-    const debug =
-      opts.debug ||
-      opts.fullDebug ||
-      testGulpProcess.debug ||
-      testGulpProcess.fullDebug;
-    const messages = new Messages(opts.messages, { debug });
-    const dest = newDest();
-
-    let tasks = opts.task || ["default"];
-
-    if (!Array.isArray(tasks)) {
-      tasks = [tasks];
-    }
-
-    const tests = tasks.map((task, nth) => {
-      const options = Object.assign(
-        {
-          setupTest() {
-            this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
-            process.env.BABEL_DISABLE_CACHE = 1; // Don't use Babel caching for
-            // these tests
-
-            // nth: Only copy sources on first gulp call in the series of tests
-            return !nth
-              ? Promise.all([
-                  copySources(options),
-                  copyGulpfile(options),
-                  copyBabelrc(options)
-                ]).then(() => linkNodeModules(options))
-              : Promise.resolve();
-          },
-
-          spawnTest() {
-            this.childProcess = spawn(
-              "gulp",
-              [
-                options.task,
-                "--gulpfile",
-                path.join(options.dest, "gulpfile.babel.js")
-              ],
-              { detached: true } // Make sure all test processes will be killed
-            );
-
-            return childProcessData(this.childProcess, { silent });
-          },
-
-          async checkResults(results) {
-            while (await messages.next(results)) {
-              results.testUpTo(messages.globalFns, messages.message, {
-                included: true
-              });
-              results.forgetUpTo(messages.message, { included: true });
-              await messages.runCurrentFns(options);
-            }
-
-            return results;
-          },
-
-          tearDownTest() {
-            return cleanUp(
-              this.childProcess,
-              options.dest,
-              this.BABEL_DISABLE_CACHE
-            ).catch(err => {
-              console.error("Failed to clean up after test");
-              console.error("You should take time and check that:");
-              console.error(`- Directory ${options.dest} is deleted`);
-              console.error(
-                `- Process ${this.childProcess.pid} is not running any more`
-              );
-              return Promise.reject(err);
-            });
-          },
-
-          onSetupError: onError,
-          onSpawnError: onError,
-          onCheckResultsError: onError
-        },
-        opts,
-        { dest, task, debug }
-      );
-
-      return makeSingleTest(wrapCallbacks(options));
-    });
-
-    return tests.reduce((promise, test) => {
-      return promise.then(() => test());
-    }, Promise.resolve());
-  };
+export interface MultiTestGulpOptions extends SingleOptions, SetupOptions {
+  task?: string | string[];
+  fullDebug?: boolean;
+  timeout?: number;
+  messages: TaskMessagesArray;
 }
 
-testGulpProcess.setDebug = function(debug) {
-  testGulpProcess.debug = debug;
-};
+export interface TestGulpOptions extends MultiTestGulpOptions {
+  task: string;
+  dest: string;
+  createDest: boolean;
+}
 
-testGulpProcess.setFullDebug = function(debug) {
-  testGulpProcess.fullDebug = debug;
-};
+export class TestGulpProcess extends SingleTest {
+  protected _task: string;
+  protected _messages: Messages;
+  protected _setupOptions: NormalizedSetupOptions;
+  protected BABEL_DISABLE_CACHE?: string;
+
+  protected static _debug: boolean = false;
+  protected static _fullDebug: boolean = false;
+
+  public static setDebug(debug: boolean): void {
+    TestGulpProcess._debug = debug;
+  }
+
+  public static setFullDebug(debug: boolean): void {
+    TestGulpProcess._fullDebug = debug;
+  }
+
+  public constructor(options: TestGulpOptions) {
+    super(options);
+
+    this._task = options.task;
+
+    this._silent =
+      options.silent || !(options.fullDebug || TestGulpProcess._fullDebug);
+
+    this._debug =
+      options.debug ||
+      options.fullDebug ||
+      TestGulpProcess._debug ||
+      TestGulpProcess._fullDebug;
+
+    this._messages = new Messages(options.messages, { debug: this._debug });
+
+    this._setupOptions = {
+      sources: options.sources,
+      gulpfile: options.gulpfile,
+      dest: options.dest,
+      createDest: options.createDest,
+      transpileSources: !!options.transpileSources,
+      transpileGulp: !!options.transpileGulp
+    };
+  }
+
+  public async run(): Promise<void> {
+    try {
+      await this.setupTest();
+      await this.spawnTest();
+      await this.checkResults();
+      console.log("success", this._task);
+    } catch (err) {
+      console.log("error");
+      try {
+        await this.onError(err);
+      } catch (e) {
+        await this.tearDownTest();
+        throw e;
+      }
+    }
+
+    await this.tearDownTest();
+  }
+
+  public async setupTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[testGulpProcess] setupTest");
+    }
+
+    this.BABEL_DISABLE_CACHE = process.env.BABEL_DISABLE_CACHE;
+    process.env.BABEL_DISABLE_CACHE = "1"; // Don't use Babel caching for
+    // these tests
+
+    // nth: Only copy sources on first gulp call in the series of tests
+    await Promise.all([
+      copySources(this._setupOptions),
+      copyGulpfile(this._setupOptions),
+      copyBabelrc(this._setupOptions)
+    ]);
+
+    await linkNodeModules(this._setupOptions);
+  }
+
+  public async spawnTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[testGulpProcess] spawnTest");
+    }
+
+    this._childProcess = spawn(
+      "gulp",
+      [
+        this._task,
+        "--gulpfile",
+        path.join(this._setupOptions.dest, "gulpfile.babel.js")
+      ],
+      { detached: true } // Make sure all test processes will be killed
+    );
+
+    this._results = new ChildProcessData(this._childProcess, {
+      silent: this._silent
+    }).results;
+  }
+
+  public async checkResults(): Promise<void> {
+    if (this._debug) {
+      console.log("[testGulpProcess] checkResults");
+    }
+
+    if (!this._results) {
+      return;
+    }
+
+    while (await this._messages.next(this._results)) {
+      console.log("<<<<<<<<<<<<<!!!");
+      console.log(this._messages.message);
+      this._results.testUpTo(this._messages.globalFns, this._messages.message, {
+        included: true
+      });
+      this._results.forgetUpTo(this._messages.message, { included: true });
+      await this._messages.runCurrentFns(this._options);
+    }
+  }
+
+  public async tearDownTest(): Promise<void> {
+    if (this._debug) {
+      console.log("[testGulpProcess] tearDownTest");
+    }
+
+    if (!this._childProcess) {
+      return;
+    }
+
+    try {
+      await cleanUp(
+        this._childProcess,
+        this._setupOptions.dest,
+        this.BABEL_DISABLE_CACHE
+      );
+    } catch (err) {
+      console.error("Failed to clean up after test");
+      console.error("You should take time and check that:");
+      console.error(`- Directory ${this._setupOptions.dest} is deleted`);
+      console.error(
+        `- Process ${this._childProcess.pid} is not running any more`
+      );
+      throw err;
+    }
+  }
+}
+
+export class MultiTestGulpProcess {
+  protected _tasks: string[];
+  protected _tests: TestGulpProcess[];
+
+  public constructor(options: MultiTestGulpOptions) {
+    const tasks = options.task || ["default"];
+    this._tasks = Array.isArray(tasks) ? tasks : [tasks];
+
+    const dest = options.dest || newDest();
+
+    this._tests = this._tasks.map(
+      (task, nth): TestGulpProcess => {
+        return new TestGulpProcess({
+          ...options,
+          task,
+          dest,
+          createDest: !nth
+        });
+      }
+    );
+  }
+
+  public async run(): Promise<void> {
+    for (const test of this._tests) {
+      await test.run();
+    }
+  }
+}
+
+export default function testGulpProcess(
+  options: MultiTestGulpOptions = {
+    // @ts-ignore
+    childProcess: null
+  }
+): () => Promise<void> {
+  return async function(): Promise<void> {
+    const timeout = (options && options.timeout) || 20000;
+
+    if (
+      // @ts-ignore
+      this.timeout && // eslint-disable-line no-invalid-this
+      // @ts-ignore
+      typeof this.timeout === "function" // eslint-disable-line no-invalid-this
+    ) {
+      // @ts-ignore
+      this.timeout(timeout); // eslint-disable-line no-invalid-this
+    }
+
+    return new MultiTestGulpProcess(options).run();
+  };
+}
 
 export {
   compareTranspiled,

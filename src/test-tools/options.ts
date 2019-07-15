@@ -3,4 +3,4 @@ export interface DestOptions {
   debug?: boolean;
 }
 
-export type Fn = (options: Options) => Promise<boolean>;
+export type Fn = (options: DestOptions) => Promise<boolean>;

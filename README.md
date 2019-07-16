@@ -392,5 +392,5 @@ describe('Testing Gulpfile', function () {
 
 test-gulp-process is [MIT licensed](./LICENSE).
 
-© 2017 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
+© 2017-2019 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
 

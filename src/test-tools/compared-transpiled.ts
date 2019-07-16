@@ -10,7 +10,10 @@ export const compareTranspiled = (
   _dest: string
 ): DestFn => (options: DestOptions): Promise<boolean> => {
   const dest = path.join(options.dest, _dest);
-  const glob = rebaseGlob(_glob, options.dest);
+  const glob = rebaseGlob(_glob, options.dest).map((glb: string): string => {
+    return glb.replace(/\.\w+$/, ".js");
+  });
+
   if (options && options.debug) {
     console.info(
       `${chalk.cyan("Checking")} transpilation of ${chalk.green(glob)}`

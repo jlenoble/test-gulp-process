@@ -62,6 +62,8 @@ export class TestGulpProcess extends SingleTest {
       TestGulpProcess._debug ||
       TestGulpProcess._fullDebug;
 
+    this._options.debug = this._debug;
+
     if (options.messages instanceof Messages) {
       this._messages = options.messages;
     } else {

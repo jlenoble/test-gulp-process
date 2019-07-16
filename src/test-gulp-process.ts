@@ -22,7 +22,7 @@ export interface MultiTestGulpOptions extends SingleOptions, SetupOptions {
   task?: string | string[];
   fullDebug?: boolean;
   timeout?: number;
-  messages: TaskMessagesArray;
+  messages: TaskMessagesArray | Messages;
 }
 
 export interface TestGulpOptions extends MultiTestGulpOptions {
@@ -62,7 +62,11 @@ export class TestGulpProcess extends SingleTest {
       TestGulpProcess._debug ||
       TestGulpProcess._fullDebug;
 
-    this._messages = new Messages(options.messages, { debug: this._debug });
+    if (options.messages instanceof Messages) {
+      this._messages = options.messages;
+    } else {
+      this._messages = new Messages(options.messages, { debug: this._debug });
+    }
 
     this._setupOptions = {
       sources: options.sources,
@@ -196,6 +200,13 @@ export class MultiTestGulpProcess {
     this._tasks = Array.isArray(tasks) ? tasks : [tasks];
 
     const dest = options.dest || newDest();
+    let messages: Messages;
+
+    if (options.messages instanceof Messages) {
+      messages = options.messages;
+    } else {
+      messages = new Messages(options.messages, { debug: options.debug });
+    }
 
     this._tests = this._tasks.map(
       (task, nth): TestGulpProcess => {
@@ -203,7 +214,8 @@ export class MultiTestGulpProcess {
           ...options,
           task,
           dest,
-          createDest: !nth
+          createDest: !nth,
+          messages
         });
       }
     );

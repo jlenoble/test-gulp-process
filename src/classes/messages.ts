@@ -60,17 +60,15 @@ export default class Messages {
       return (this.nextTask = false);
     }
 
-    return await this.taskMessages.next(results);
+    return this.taskMessages.next(results);
   }
 
   public async runCurrentFns(options: TaskMessagesOptions): Promise<void> {
-    const next = this.taskMessages.runCurrentFns(options);
+    await this.taskMessages.runCurrentFns(options);
 
     if (this.taskMessages.nextTask) {
       this.index++;
       this.nextTask = true;
     }
-
-    return next;
   }
 }

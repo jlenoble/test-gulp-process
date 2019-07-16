@@ -1,28 +1,21 @@
 import del from "del";
 import path from "path";
+import deepKill from "deepkill";
+import { ChildProcess } from "child_process";
 
-export const cleanUp = (childProcess, destDir, BABEL_DISABLE_CACHE) => {
-  if (childProcess && childProcess.exitCode === null) {
-    process.kill(-childProcess.pid); // Kill test process if still alive
+export const cleanUp = async (
+  childProcess: ChildProcess,
+  destDir: string,
+  BABEL_DISABLE_CACHE?: string
+): Promise<void> => {
+  if (childProcess) {
+    await deepKill(childProcess.pid);
   }
 
   process.env.BABEL_DISABLE_CACHE = BABEL_DISABLE_CACHE;
 
   if (path.resolve(destDir).includes(process.cwd())) {
-    return del(destDir);
+    // @ts-ignore
+    await del(destDir);
   }
-
-  return Promise.resolve();
 };
-
-export function onError(err) {
-  return this.tearDownTest() // eslint-disable-line no-invalid-this
-    .then(
-      () => Promise.reject(err),
-      e => {
-        console.error("Test originally failed with error:", err);
-        console.error("But another error occurred in the meantime:");
-        return Promise.reject(e);
-      }
-    );
-}

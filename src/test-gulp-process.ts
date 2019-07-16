@@ -205,7 +205,9 @@ export class MultiTestGulpProcess {
     if (options.messages instanceof Messages) {
       messages = options.messages;
     } else {
-      messages = new Messages(options.messages, { debug: options.debug });
+      messages = new Messages(options.messages, {
+        debug: options.debug || options.fullDebug
+      });
     }
 
     this._tests = this._tasks.map(

@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 describe("Testing cache helpers", (): void => {
   before(function(): void {
-    this.debug = true; // eslint-disable-line no-invalid-this
+    this.debug = false; // eslint-disable-line no-invalid-this
   });
 
   beforeEach((): void => {

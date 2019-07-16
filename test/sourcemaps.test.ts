@@ -10,7 +10,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-sourcemaps.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,

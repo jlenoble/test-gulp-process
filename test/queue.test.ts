@@ -8,7 +8,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -24,7 +23,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -40,7 +38,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -61,7 +58,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -89,7 +85,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts"],
       gulpfile: "test/gulpfiles/exec-queue-bugfix1.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,

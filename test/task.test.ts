@@ -10,7 +10,6 @@ describe("Testing Gulpfile task", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-task.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [`Starting 'default'...`, "coucou", `Finished 'default' after`]
     })
@@ -23,7 +22,6 @@ describe("Testing Gulpfile task", (): void => {
       gulpfile: "test/gulpfiles/exec-task.js",
       task: "hello",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         never(`Starting 'default'...`),
@@ -42,7 +40,6 @@ describe("Testing Gulpfile task", (): void => {
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
       transpileGulp: true,
-      debug: true,
 
       messages: [
         never(`Starting 'default'...`),
@@ -71,7 +68,6 @@ describe("Testing Gulpfile task", (): void => {
       gulpfile: "test/gulpfiles/exec-task.js",
       task: ["hello", "default", "ciao"],
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'hello'...`,

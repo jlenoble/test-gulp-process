@@ -13,7 +13,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/exec-transpile-all.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -35,7 +34,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,
@@ -61,7 +59,6 @@ describe("Testing Gulpfile", (): void => {
       sources: ["src/**/*.ts", "test/**/*.ts", "gulp/**/*.js"],
       gulpfile: "test/gulpfiles/tdd-transpile-all.js",
       transpileGulp: true,
-      debug: true,
 
       messages: [
         `Starting 'default'...`,

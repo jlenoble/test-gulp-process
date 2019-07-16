@@ -16,5 +16,5 @@ export const compareTranspiled = (
       `${chalk.cyan("Checking")} transpilation of ${chalk.green(glob)}`
     );
   }
-  return equalFileContents(glob, dest, babel, options.dest);
+  return equalFileContents(glob, dest, { pipe: babel, base: options.dest });
 };

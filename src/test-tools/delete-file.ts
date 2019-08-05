@@ -23,7 +23,7 @@ export const deleteFile = (_file: string | string[]): DestFn => async (
   const exec = async (): Promise<void> => {
     await Promise.all(
       files.map(
-        (file): Promise<void> => {
+        (file): Promise<string[]> => {
           if (options && options.debug) {
             console.info(`${chalk.cyan("Deleting")} ${chalk.green(file)}`);
           }

@@ -27,7 +27,7 @@ export default class TaskMessages {
   protected parallelMessages: ParallelMessages | null = null;
   protected _globalFns: TestFunction[] = [];
   protected fns: Fn[] | null = [];
-  protected _nextTask: boolean = false;
+  protected _nextTask = false;
 
   public get message(): string {
     return this._message || "";

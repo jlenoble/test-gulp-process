@@ -37,8 +37,8 @@ export class TestGulpProcess extends SingleTest {
   protected _setupOptions: NormalizedSetupOptions;
   protected BABEL_DISABLE_CACHE?: string;
 
-  protected static _debug: boolean = false;
-  protected static _fullDebug: boolean = false;
+  protected static _debug = false;
+  protected static _fullDebug = false;
 
   public static setDebug(debug: boolean): void {
     TestGulpProcess._debug = debug;

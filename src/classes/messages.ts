@@ -32,8 +32,8 @@ const splitMessages = (
 };
 
 export default class Messages {
-  protected nextTask: boolean = false;
-  protected index: number = 0;
+  protected nextTask = false;
+  protected index = 0;
   protected _taskMessages: TaskMessages[];
 
   public get taskMessages(): TaskMessages {

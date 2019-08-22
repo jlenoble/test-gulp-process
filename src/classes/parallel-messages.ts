@@ -1,8 +1,8 @@
 import chalk from "chalk";
 
 export default class ParallelMessages {
-  protected debug: boolean = false;
-  protected notStarted: boolean = true;
+  protected debug = false;
+  protected notStarted = true;
   protected queues: string[][];
   protected messages: string[];
 

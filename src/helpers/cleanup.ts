@@ -15,7 +15,6 @@ export const cleanUp = async (
   process.env.BABEL_DISABLE_CACHE = BABEL_DISABLE_CACHE;
 
   if (path.resolve(destDir).includes(process.cwd())) {
-    // @ts-ignore
     await del(destDir);
   }
 };

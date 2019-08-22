@@ -233,26 +233,21 @@ export class MultiTestGulpProcess {
 }
 
 export default function testGulpProcess(
-  options: MultiTestGulpOptions = {
-    // @ts-ignore
-    childProcess: null
-  }
+  options: MultiTestGulpOptions
 ): () => Promise<void> {
-  return async function(): Promise<void> {
-    const timeout = (options && options.timeout) || 20000;
+  const obj: { timeout?: (n: number) => void; fn: () => Promise<void> } = {
+    fn: async function(): Promise<void> {
+      const timeout = (options && options.timeout) || 20000;
 
-    if (
-      // @ts-ignore
-      this.timeout && // eslint-disable-line no-invalid-this
-      // @ts-ignore
-      typeof this.timeout === "function" // eslint-disable-line no-invalid-this
-    ) {
-      // @ts-ignore
-      this.timeout(timeout); // eslint-disable-line no-invalid-this
+      if (this.timeout && typeof this.timeout === "function") {
+        this.timeout(timeout);
+      }
+
+      await new MultiTestGulpProcess(options).run();
     }
-
-    return new MultiTestGulpProcess(options).run();
   };
+
+  return obj.fn;
 }
 
 export {
